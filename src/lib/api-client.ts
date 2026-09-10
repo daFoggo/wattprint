@@ -1,8 +1,10 @@
 import { fetch as expoFetch } from 'expo/fetch';
+
+import { env } from './env';
 import { tokenStorage } from './token-storage';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? '';
-const REFRESH_URL = process.env.EXPO_PUBLIC_AUTH_REFRESH_URL;
+const BASE_URL = env.apiUrl;
+const REFRESH_URL = env.authRefreshUrl;
 
 export class ApiError extends Error {
   constructor(
