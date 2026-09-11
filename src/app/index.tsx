@@ -1,1 +1,3 @@
-export { HomeScreen as default } from '@/screens/home';
+import { HomeScreen } from '@/screens/home/index';
+
+export default HomeScreen;

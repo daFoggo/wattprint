@@ -1,0 +1,66 @@
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { Fonts, WattPrintTokens } from '@/constants/theme';
+
+interface HomeHeaderProps {
+  onPressAi?: () => void;
+}
+
+export function HomeHeader({ onPressAi }: HomeHeaderProps) {
+  return (
+    <View style={styles.header}>
+      <View style={styles.greetingContainer}>
+        <Text style={styles.date}>TUESDAY, 9 SEP</Text>
+        <Text style={styles.greeting}>Good evening, Minh</Text>
+      </View>
+
+      <Pressable
+        onPress={onPressAi}
+        accessibilityRole="button"
+        accessibilityLabel="Open Energy Copilot AI"
+        style={styles.aiButton}>
+        <Text style={styles.aiText}>AI</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 12,
+    paddingBottom: 4,
+    backgroundColor: WattPrintTokens.colors.neutral, // #FFFFFF
+  },
+  greetingContainer: {
+    gap: 2,
+  },
+  date: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 11,
+    letterSpacing: 0.88, // .08em
+    color: WattPrintTokens.colors.secondary, // #4A6B60
+  },
+  greeting: {
+    fontFamily: Fonts.sansSemiBold,
+    fontSize: 21,
+    lineHeight: 25.2,
+    color: WattPrintTokens.colors.primary, // #164437
+  },
+  aiButton: {
+    width: 46,
+    height: 46,
+    borderRadius: WattPrintTokens.radii.pill,
+    backgroundColor: WattPrintTokens.colors.tertiary, // #B5E930 Green Lizard
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  aiText: {
+    fontFamily: Fonts.monoSemiBold,
+    fontSize: 12,
+    color: WattPrintTokens.colors.primary, // #164437 MSU Green
+  },
+});

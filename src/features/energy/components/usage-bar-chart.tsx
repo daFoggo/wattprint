@@ -1,72 +1,97 @@
-import { StyleSheet, View } from 'react-native';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { ThemedText } from '@/components/common/themed-text';
-import { ThemedView } from '@/components/common/themed-view';
-import { Spacing } from '@/constants/theme';
-
-import type { UsagePoint } from '../types';
+import { Fonts, WattPrintTokens } from '@/constants/theme';
+import type { BarDatum } from '@/features/energy/types';
 
 interface UsageBarChartProps {
-  points: UsagePoint[];
+  bars: BarDatum[];
+  selectedIndex: number;
+  onSelect: (index: number) => void;
+  height?: number;
 }
 
-function maxOf(points: UsagePoint[]): number {
-  return Math.max(...points.map((point) => point.kwh), 1);
-}
-
-function weekdayLabel(timestamp: string): string {
-  return new Date(timestamp).toLocaleDateString('vi-VN', { weekday: 'short' });
-}
-
-export function UsageBarChart({ points }: UsageBarChartProps) {
-  const max = maxOf(points);
+export function UsageBarChart({
+  bars = [],
+  selectedIndex = 0,
+  onSelect,
+  height = 140,
+}: UsageBarChartProps) {
+  const safeBars = Array.isArray(bars) ? bars : [];
+  const max = safeBars.length > 0 ? Math.max(...safeBars.map((b) => b[1])) : 1;
 
   return (
-    <ThemedView type="backgroundElement" style={styles.container}>
-      {points.map((point) => (
-        <View key={point.timestamp} style={styles.column}>
-          <View style={styles.track}>
-            <View
+    <View style={[styles.chartContainer, { height }]}>
+      {safeBars.map((bar, i) => {
+        const isSelected = selectedIndex === i;
+        const barHeight = Math.max(4, Math.round((bar[1] / max) * (height - 30)));
+
+        return (
+          <Pressable
+            key={i}
+            onPress={() => onSelect(i)}
+            hitSlop={6}
+            style={styles.barColumn}>
+            <View style={styles.barTrack}>
+              <View
+                style={[
+                  styles.barFill,
+                  {
+                    height: barHeight,
+                    backgroundColor: isSelected
+                      ? WattPrintTokens.colors.primary // #164437
+                      : '#8CD41C', // Leaf Green
+                  },
+                ]}
+              />
+            </View>
+            <Text
               style={[
-                styles.bar,
-                { height: `${Math.max((point.kwh / max) * 100, 4)}%` },
-              ]}
-            />
-          </View>
-          <ThemedText type="small" themeColor="textSecondary">
-            {weekdayLabel(point.timestamp)}
-          </ThemedText>
-        </View>
-      ))}
-    </ThemedView>
+                styles.barLabel,
+                isSelected && styles.barLabelActive,
+              ]}>
+              {bar[0]}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  chartContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    gap: Spacing.two,
-    padding: Spacing.three,
-    borderRadius: Spacing.three,
+    gap: 6,
+    width: '100%',
+    paddingTop: 8,
   },
-  column: {
+  barColumn: {
     flex: 1,
+    height: '100%',
     alignItems: 'center',
-    gap: Spacing.one,
-  },
-  track: {
-    width: '100%',
-    height: 96,
     justifyContent: 'flex-end',
-    borderRadius: Spacing.one,
-    backgroundColor: 'rgba(128, 128, 128, 0.15)',
-    overflow: 'hidden',
+    gap: 8,
   },
-  bar: {
+  barTrack: {
+    flex: 1,
     width: '100%',
-    borderRadius: Spacing.one,
-    backgroundColor: '#3c87f7',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  barFill: {
+    width: '100%',
+    borderRadius: 6,
+  },
+  barLabel: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 10,
+    color: WattPrintTokens.colors.secondary, // #4A6B60
+    textAlign: 'center',
+    height: 14,
+  },
+  barLabelActive: {
+    color: WattPrintTokens.colors.primary, // #164437
   },
 });

@@ -7,49 +7,116 @@ import '@/global.css';
 
 import { Platform } from 'react-native';
 
+export const WattPrintTokens = {
+  colors: {
+    primary: '#164437', // MSU Green
+    onPrimary: '#FFFFFF',
+    primaryContainer: '#EFF4E6', // Unit switch chip & suggestion surface
+    onPrimaryContainer: '#2C5145',
+    secondary: '#4A6B60', // Slate green (metadata, units, axis ticks)
+    tertiary: '#B5E930', // Green Lizard (dominant figure, key action)
+    onTertiary: '#164437',
+    tertiaryContainer: '#DEEEBD',
+    onTertiaryContainer: '#1E5A08',
+    accentDeep: '#2F7A0C', // Accessible accent for small text on white
+    neutral: '#FFFFFF',
+    neutralGround: '#F2F4ED', // Tinted container ground
+    neutralLine: '#E7EBE1', // Subtle rails/dividers
+    inkBody: '#3D5F54',
+    inkInverseMuted: '#BBD2C9',
+    inkInverseBody: '#DCEBD3',
+  },
+  dataRamp: [
+    { bg: '#B5E930', fg: '#164437' }, // Step 1: Green Lizard
+    { bg: '#8CD41C', fg: '#164437' }, // Step 2: Leaf Green
+    { bg: '#2F7A0C', fg: '#FFFFFF' }, // Step 3: Deep Forest
+    { bg: '#164437', fg: '#FFFFFF' }, // Step 4: MSU Green
+    { bg: '#4A6B60', fg: '#FFFFFF' }, // Step 5: Slate Green
+  ],
+  radii: {
+    xs: 4,
+    sm: 10,
+    md: 14,
+    lg: 16,
+    xl: 20,
+    pill: 999,
+  },
+  spacing: {
+    xs: 4,
+    sm: 8,
+    md: 12,
+    lg: 16,
+    xl: 22,
+    gutter: 24,
+    section: 12,
+  },
+} as const;
+
 export const Colors = {
   light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    text: '#164437',
+    textSecondary: '#4A6B60',
+    background: '#FFFFFF',
+    backgroundElement: '#F2F4ED',
+    backgroundSelected: '#EFF4E6',
+    primary: '#164437',
+    onPrimary: '#FFFFFF',
+    primaryContainer: '#EFF4E6',
+    secondary: '#4A6B60',
+    tertiary: '#B5E930',
+    accentDeep: '#2F7A0C',
+    neutralGround: '#F2F4ED',
+    neutralLine: '#E7EBE1',
+    inkBody: '#3D5F54',
   },
   dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
+    text: '#FFFFFF',
+    textSecondary: '#BBD2C9',
+    background: '#0B231C',
+    backgroundElement: '#164437',
+    backgroundSelected: '#2C5145',
+    primary: '#B5E930',
+    onPrimary: '#164437',
+    primaryContainer: '#164437',
+    secondary: '#BBD2C9',
+    tertiary: '#B5E930',
+    accentDeep: '#8CD41C',
+    neutralGround: '#164437',
+    neutralLine: '#2C5145',
+    inkBody: '#DCEBD3',
   },
 } as const;
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
+export const Fonts = {
+  sans: Platform.select({
+    web: "Google Sans Flex, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    default: 'GoogleSansFlex-Regular',
+  }),
+  sansMedium: Platform.select({
+    web: "Google Sans Flex, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    default: 'GoogleSansFlex-Medium',
+  }),
+  sansSemiBold: Platform.select({
+    web: "Google Sans Flex, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    default: 'GoogleSansFlex-SemiBold',
+  }),
+  mono: Platform.select({
+    web: "Geist Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+    default: 'GeistMono-Regular',
+  }),
+  monoMedium: Platform.select({
+    web: "Geist Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+    default: 'GeistMono-Medium',
+  }),
+  monoSemiBold: Platform.select({
+    web: "Geist Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+    default: 'GeistMono-SemiBold',
+  }),
+  serif: 'serif',
+  rounded: 'normal',
+};
 
 export const Spacing = {
   half: 2,
@@ -59,7 +126,12 @@ export const Spacing = {
   four: 24,
   five: 32,
   six: 64,
+  ...WattPrintTokens.spacing,
 } as const;
+
+export const Radii = WattPrintTokens.radii;
+export const DataRamp = WattPrintTokens.dataRamp;
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
+

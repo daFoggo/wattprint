@@ -1,6 +1,5 @@
 import { ApiError } from '@/lib/api-client';
 import { useReactQueryDevTools } from '@dev-plugins/react-query';
-import NetInfo from '@react-native-community/netinfo';
 import {
   QueryClient,
   QueryClientProvider,
@@ -8,7 +7,7 @@ import {
   onlineManager,
 } from '@tanstack/react-query';
 import { PropsWithChildren, useEffect } from 'react';
-import { AppState, AppStateStatus, Platform } from 'react-native';
+import { AppState, AppStateStatus, NativeModules, Platform } from 'react-native';
 
 export function makeQueryClient() {
   return new QueryClient({
@@ -56,11 +55,22 @@ export function QueryProvider({ children }: PropsWithChildren) {
   const client = getQueryClient();
 
   useEffect(() => {
-    onlineManager.setEventListener((setOnline) => {
-      return NetInfo.addEventListener((state) => {
-        setOnline(state.isConnected ?? true);
-      });
-    });
+    // Safely configure onlineManager only if NativeModule.RNCNetInfo exists on native
+    if (Platform.OS !== 'web' && NativeModules?.RNCNetInfo) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const NetInfo = require('@react-native-community/netinfo').default;
+        if (NetInfo && typeof NetInfo.addEventListener === 'function') {
+          onlineManager.setEventListener((setOnline) => {
+            return NetInfo.addEventListener((state: { isConnected?: boolean | null }) => {
+              setOnline(state.isConnected ?? true);
+            });
+          });
+        }
+      } catch {
+        // Native module unavailable or failed
+      }
+    }
 
     const subscription = AppState.addEventListener('change', (status: AppStateStatus) => {
       if (Platform.OS !== 'web') {
@@ -69,7 +79,7 @@ export function QueryProvider({ children }: PropsWithChildren) {
     });
 
     return () => {
-      subscription.remove();
+      subscription?.remove?.();
     };
   }, []);
 
