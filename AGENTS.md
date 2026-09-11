@@ -23,8 +23,7 @@ src/
 │       ├── types.ts  mock.ts       # data contract / fixtures
 │       └── index.ts               # (avoid barrels — see below)
 ├── components/
-│   ├── ui/              # vendored gluestack design system — DO NOT edit
-│   └── common/          # domain-agnostic, app-wide UI (shell, chrome)
+│   └── common/          # domain-agnostic, app-wide UI (shell, chrome, card)
 ├── lib/                 # infrastructure: api-client, env, token-storage
 ├── providers/           # app-wide providers (react-query)
 ├── hooks/  utils/  constants/
@@ -39,7 +38,7 @@ Place UI/data by **scope of reuse + domain coupling**, not by "UI vs logic":
 | Used by ≥2 pages, or a cross-cutting domain capability | `features/<feature>/` |
 | Page-local (rendered by exactly one page) | `screens/<page>/components/` |
 | Domain-agnostic, app-wide (layout, shell, chrome) | `components/common/` |
-| Primitives | `components/ui/` |
+| Native controls (Switch, BottomSheet, Slider, Menu) | `@expo/ui` |
 
 **Promote, don't predict.** When a page-local view gains a second consumer, move it into the owning
 feature and update imports. Do not pre-place single-consumer UI in a feature.
@@ -48,10 +47,9 @@ feature and update imports. Do not pre-place single-consumer UI in a feature.
 
 - `src/app/` holds routes only; each route is a thin re-export of a screen: `export { HomeScreen as default } from '@/screens/home';`
 - Screens (page tier) may import from features; **features never import screens**, and never import another feature's UI to compose a page — that composition belongs to the screen.
-- `components/ui/` is vendored gluestack — never edit it; only fix a pre-existing bug if required.
-  It is excluded from typecheck and lint (`tsconfig.json` / `eslint.config.js`) because the alpha
-  build has unresolved type issues.
-- New shared components go to `components/common/`, never `components/ui/`.
+- UI styling follows WattPrint's pure flat tokens (`#164437`, `#B5E930`, `#F2F4ED`) via pure React Native primitives (`View`, `Text`, `Pressable`, `StyleSheet`).
+- Use `@expo/ui` for genuine native platform controls (`Switch`, `BottomSheet`, `Slider`, `Menu`) wrapped in `<Host>`.
+- New shared components go to `components/common/`.
 - Infrastructure that features depend on (api, env, auth, storage) lives in `lib/`.
 - Absolute imports via `@/` (maps to `src/`); **avoid barrel `index.ts`** in feature/screen code to keep fast refresh working (import the file directly).
 - Kebab-case filenames; colocate styles at the bottom of the component and tests next to the file.

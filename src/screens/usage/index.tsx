@@ -2,9 +2,10 @@ import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { Fonts, WattPrintTokens } from '@/constants/theme';
-import { Card } from '@/components/ui/card';
-import { SafeAreaView } from '@/components/ui/safe-area-view';
+import { Card } from '@/components/common/card';
 import { BillingTariffView } from '@/features/energy/components/billing-tariff-view';
 import { BreakdownTable } from '@/features/energy/components/breakdown-table';
 import { BubbleBreakdown } from '@/features/energy/components/bubble-breakdown';

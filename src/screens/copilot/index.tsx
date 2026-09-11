@@ -11,8 +11,9 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { Fonts, WattPrintTokens } from '@/constants/theme';
-import { SafeAreaView } from '@/components/ui/safe-area-view';
 import { ChatMessageBubble } from '@/features/energy/components/chat-message-bubble';
 import { MOCK_SUGGESTIONS } from '@/features/energy/mock';
 import { useEnergyStore } from '@/features/energy/use-energy-store';

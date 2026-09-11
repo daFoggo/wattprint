@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { Fonts, WattPrintTokens } from '@/constants/theme';
-import { Card } from '@/components/ui/card';
-import { SafeAreaView } from '@/components/ui/safe-area-view';
+import { Card } from '@/components/common/card';
 import { UnderlineTabRow } from '@/features/energy/components/underline-tab-row';
 import { UsageBarChart } from '@/features/energy/components/usage-bar-chart';
 import {

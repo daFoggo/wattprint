@@ -1,9 +1,10 @@
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { Fonts, WattPrintTokens } from '@/constants/theme';
-import { Card } from '@/components/ui/card';
-import { SafeAreaView } from '@/components/ui/safe-area-view';
+import { Card } from '@/components/common/card';
 import { ExperimentStateCard } from '@/features/energy/components/experiment-state-card';
 import { MOCK_EXP_LOG } from '@/features/energy/mock';
 import type { ExperimentState } from '@/features/energy/types';

@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Host, Switch } from '@expo/ui';
 
 import { Fonts, WattPrintTokens } from '@/constants/theme';
-import { Box } from '@/components/ui/box';
-import { Card } from '@/components/ui/card';
-import { SafeAreaView } from '@/components/ui/safe-area-view';
+import { Card } from '@/components/common/card';
 import { ACCOUNT_GROUPS } from '@/features/energy/mock';
 
 export function AccountScreen() {
+  const [tierWarnings, setTierWarnings] = useState(true);
+  const [phantomAlerts, setPhantomAlerts] = useState(true);
+
   return (
     <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
       <ScrollView
@@ -17,9 +20,9 @@ export function AccountScreen() {
         <View style={styles.groundHeader}>
           <Text style={styles.title}>Account</Text>
           <View style={styles.profileRow}>
-            <Box style={styles.avatar}>
+            <View style={styles.avatar}>
               <Text style={styles.avatarText}>MK</Text>
-            </Box>
+            </View>
             <View style={styles.profileInfo}>
               <Text style={styles.userName}>Minh Khoa</Text>
               <Text style={styles.userEmail}>khoa.tran@gmail.com</Text>
@@ -29,15 +32,11 @@ export function AccountScreen() {
 
         {/* Paired Status Cards */}
         <View style={styles.pairedGrid}>
-          <Card
-            className="border-0 shadow-none bg-white rounded-[20px] p-4 gap-1.5"
-            style={styles.statusCard}>
+          <Card style={styles.statusCard}>
             <Text style={styles.statusEyebrow}>TARIFF</Text>
             <Text style={styles.statusValue}>Household</Text>
           </Card>
-          <Card
-            className="border-0 shadow-none bg-white rounded-[20px] p-4 gap-1.5"
-            style={styles.statusCard}>
+          <Card style={styles.statusCard}>
             <Text style={styles.statusEyebrow}>SENSOR</Text>
             <Text style={styles.statusValue}>Connected</Text>
           </Card>
@@ -45,22 +44,35 @@ export function AccountScreen() {
 
         {/* Grouped Settings Cards */}
         {ACCOUNT_GROUPS.map((group) => (
-          <Card
-            key={group.title}
-            className="border-0 shadow-none bg-white rounded-[20px] p-5 pb-2 gap-1"
-            style={styles.groupCard}>
+          <Card key={group.title} style={styles.groupCard}>
             <Text style={styles.groupTitle}>{group.title}</Text>
             <View style={styles.groupItems}>
-              {group.items.map((item: { label: string; value: string }, idx: number) => (
-                <View key={idx} style={styles.itemRow}>
-                  <Text style={styles.itemLabel}>{item.label}</Text>
-                  {item.value ? (
-                    <Text style={styles.itemValue}>{item.value}</Text>
-                  ) : (
-                    <Text style={styles.itemChevron}>›</Text>
-                  )}
-                </View>
-              ))}
+              {group.items.map((item: { label: string; value: string }, idx: number) => {
+                const isTierWarning = item.label === 'Tier warnings';
+                const isPhantomAlert = item.label === 'Phantom load alerts';
+                const isToggle = isTierWarning || isPhantomAlert;
+
+                return (
+                  <View key={idx} style={styles.itemRow}>
+                    <Text style={styles.itemLabel}>{item.label}</Text>
+                    {isToggle ? (
+                      <Host matchContents>
+                        <Switch
+                          value={isTierWarning ? tierWarnings : phantomAlerts}
+                          onValueChange={(val) => {
+                            if (isTierWarning) setTierWarnings(val);
+                            else setPhantomAlerts(val);
+                          }}
+                        />
+                      </Host>
+                    ) : item.value ? (
+                      <Text style={styles.itemValue}>{item.value}</Text>
+                    ) : (
+                      <Text style={styles.itemChevron}>›</Text>
+                    )}
+                  </View>
+                );
+              })}
             </View>
           </Card>
         ))}
