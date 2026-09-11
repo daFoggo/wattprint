@@ -5,6 +5,7 @@ import type {
   BillDay,
   BubbleDevice,
   ChatMessage,
+  ChatThread,
   DashboardHeroData,
   DashboardRange,
   DeviceDetailData,
@@ -362,6 +363,171 @@ export const INITIAL_CHAT: ChatMessage[] = [
     who: 'ai',
     text: 'Good evening. Your meter is live and the last 30 days are indexed. Ask about a number and I will show where it comes from.',
     facts: [],
+  },
+];
+
+export const MOCK_CHAT_THREADS: ChatThread[] = [
+  {
+    id: 'thread-1',
+    title: 'Why is the bill up 35%?',
+    category: 'AIR CON',
+    period: 'SEP',
+    timeAgo: '2h ago',
+    group: 'today',
+    dotColor: '#B5E930',
+    messages: [
+      {
+        id: 't1-m1',
+        who: 'me',
+        text: 'Why is the bill up 35% this month compared to last?',
+      },
+      {
+        id: 't1-m2',
+        who: 'ai',
+        text: 'September was 2.4°C warmer than August, pushing your living room air conditioning runtime from 4.8 to 8.1 hours daily. The extra 98 kWh pushed 42 kWh into Tier 4 (3,151 VND/kWh), accounting for 31% of the increase.',
+        facts: [
+          { k: 'AC RUNTIME', v: '8.1h/d (+68%)' },
+          { k: 'TEMP DELTA', v: '+2.4°C avg' },
+          { k: 'TIER 4 SHIFT', v: '42 kWh' },
+        ],
+        cta: 'Run AC 26°C + fan experiment',
+      },
+    ],
+  },
+  {
+    id: 'thread-2',
+    title: 'Standby load after midnight',
+    category: 'ALWAYS ON',
+    period: '30D',
+    timeAgo: '5h ago',
+    group: 'today',
+    dotColor: '#4A6B60',
+    messages: [
+      {
+        id: 't2-m1',
+        who: 'me',
+        text: 'What is running standby load after midnight?',
+      },
+      {
+        id: 't2-m2',
+        who: 'ai',
+        text: 'Between 02:00 and 05:00 the flat floor sits at 35 W after the fridge compressor cycle is removed. That is about 25 kWh a month from the TV cluster and the router shelf, billed at your marginal band (Tier 3), roughly 71,000 VND.',
+        facts: [
+          { k: 'STANDBY LOAD', v: '35 W' },
+          { k: 'MONTHLY WASTE', v: '25 kWh' },
+          { k: 'EST. COST', v: '71,000 VND' },
+        ],
+        cta: 'Test TV cluster smart plug cutoff',
+      },
+    ],
+  },
+  {
+    id: 'thread-3',
+    title: 'Water heater window',
+    category: 'WATER HEATER',
+    period: 'AUG',
+    timeAgo: 'Mon',
+    group: 'this_week',
+    dotColor: '#B5E930',
+    messages: [
+      {
+        id: 't3-m1',
+        who: 'me',
+        text: 'When is the most efficient window to run the water heater?',
+      },
+      {
+        id: 't3-m2',
+        who: 'ai',
+        text: 'Your storage water heater pulls 2,500 W for 35 minutes per heating cycle. Scheduling it between 22:00 and 23:00 avoids daytime peak tariff rates and cuts overnight standby reheating losses before morning showers.',
+        facts: [
+          { k: 'POWER DRAW', v: '2,500 W' },
+          { k: 'CYCLE DURATION', v: '35 mins' },
+          { k: 'TARGET WINDOW', v: '22:00–23:00' },
+        ],
+        cta: 'Set 22:00 water heater timer',
+      },
+    ],
+  },
+  {
+    id: 'thread-4',
+    title: 'How do I stay in this tier?',
+    category: 'BILL',
+    period: 'SEP',
+    timeAgo: 'Sun',
+    group: 'this_week',
+    dotColor: '#2F7A0C',
+    messages: [
+      {
+        id: 't4-m1',
+        who: 'me',
+        text: 'How do I stay in Tier 3 this month?',
+      },
+      {
+        id: 't4-m2',
+        who: 'ai',
+        text: 'You are at 284 kWh with 6 days left in the cycle. Staying inside Tier 3 means holding a 2.7 kWh/day budget against your current 4.2 kWh pace. Shifting the water heater to the 22:00 window covers about half of the gap.',
+        facts: [
+          { k: 'USED SO FAR', v: '284 kWh' },
+          { k: 'HEADROOM', v: '16 kWh' },
+          { k: 'DAILY BUDGET', v: '2.7 kWh/d' },
+        ],
+        cta: 'Start 3-day test at 26.5°C',
+      },
+    ],
+  },
+  {
+    id: 'thread-5',
+    title: 'Is the fridge cycling too often?',
+    category: 'FRIDGE',
+    period: 'AUG',
+    timeAgo: '28 Aug',
+    group: 'earlier',
+    dotColor: '#164437',
+    messages: [
+      {
+        id: 't5-m1',
+        who: 'me',
+        text: 'Is the fridge cycling too often during the day?',
+      },
+      {
+        id: 't5-m2',
+        who: 'ai',
+        text: 'The refrigerator compressor cycled 38 times yesterday, averaging 18 minutes on and 20 minutes off. This duty cycle is normal for 32°C ambient room temperature, but dust on the condenser coils could be adding ~10% cycle frequency.',
+        facts: [
+          { k: 'DAILY CYCLES', v: '38 times' },
+          { k: 'AVG ON-CYCLE', v: '18 mins' },
+          { k: 'EST. IMPACT', v: '+10% freq' },
+        ],
+        cta: 'Log coil cleaning check',
+      },
+    ],
+  },
+  {
+    id: 'thread-6',
+    title: 'Cooktop versus rice cooker',
+    category: 'COOKTOP',
+    period: 'AUG',
+    timeAgo: '21 Aug',
+    group: 'earlier',
+    dotColor: '#8CD41C',
+    messages: [
+      {
+        id: 't6-m1',
+        who: 'me',
+        text: 'Which uses more electricity: cooking on induction or electric cooker?',
+      },
+      {
+        id: 't6-m2',
+        who: 'ai',
+        text: 'A typical 45-minute induction cooking session draws ~0.85 kWh. A dedicated rice cooker uses 0.32 kWh for cooking plus 0.04 kWh/h warming. For grain cooking, the dedicated cooker uses ~60% less energy than the open cooktop.',
+        facts: [
+          { k: 'INDUCTION MEAL', v: '0.85 kWh' },
+          { k: 'RICE COOKER', v: '0.32 kWh' },
+          { k: 'ENERGY SAVED', v: '~60%' },
+        ],
+        cta: 'Compare cooking loads in Lab',
+      },
+    ],
   },
 ];
 

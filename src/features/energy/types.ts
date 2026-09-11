@@ -124,6 +124,17 @@ export interface ChatMessage {
   cta?: string;
 }
 
+export interface ChatThread {
+  id: string;
+  title: string;
+  category: string;
+  period: string;
+  timeAgo: string;
+  group: 'today' | 'this_week' | 'earlier';
+  dotColor: string;
+  messages: ChatMessage[];
+}
+
 export interface Suggestion {
   q: string;
   a: string;

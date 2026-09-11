@@ -142,6 +142,23 @@ On React Native Android (Hermes runtime), CSS-style wide tracking values (`0.96`
   - `<Switch>`: Integrated in Account screen for preferences with native spring dynamics.
   - `<BottomSheet>`: Rapid appliance inspection bottom sheet with drag indicators.
 
+### 5.7 Copilot Architecture (`ChatThreadList` & `ChatThreadView`)
+- **Session List UI (`ChatThreadList`)**:
+  - Clean title header: `Copilot` (28px bold Sans) with live `N THREADS` counter in Geist Mono.
+  - Search input: Pill container in `#F2F4ED` with live multi-field filtering across thread title, category, and period.
+  - Timeline grouping: `TODAY`, `THIS WEEK`, `EARLIER` timeline markers with subtle 0.6 tracking.
+  - Row items: Leading DataRamp colored square chips (`10x10px`, `borderRadius: 3`), active session highlighting with quiet `#EFF4E6` background.
+  - Floating Action Button (FAB): `+ New thread` in `#164437` + `#B5E930` floating `bottom: 20px` directly above the NativeTabs bar.
+- **Unified Chat Block (`ChatMessageBubble` & `ChatThreadView`)**:
+  - Editorial, single-block analytical presentation replacing speech bubbles with tails.
+  - User turn: Right-aligned compact card in `#164437` with crisp white typography.
+  - Copilot turn: Single contiguous `#F2F4ED` card container featuring:
+    - Header: `COPILOT` badge + `METER INDEXED` audit stamp in Geist Mono.
+    - Narrative prose: Google Sans Flex body text contextualizing meter calculations.
+    - Fact Rail: Integrated borderless 3-column data grid (`#EFF4E6` ground, Geist Mono) mapping key metrics (e.g. AC runtime, temp delta, tier shift).
+    - Primary CTA: High-voltage `#B5E930` pill button navigating to suggested experiments.
+  - Bottom input docking: Sits natively above `NativeTabs` with `paddingBottom: 12` (no redundant overlay insets).
+
 ---
 
 ## 6. Do's and Don'ts Checklist

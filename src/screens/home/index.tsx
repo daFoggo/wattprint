@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
-import { BottomTabInset, MaxContentWidth, WattPrintTokens } from '@/constants/theme';
+import { BottomTabInset, DataRamp, MaxContentWidth, WattPrintTokens } from '@/constants/theme';
 import { BubbleBreakdown } from '@/features/energy/components/bubble-breakdown';
 import { EnergyAlertsBlock } from '@/features/energy/components/energy-alerts-block';
 import { EnergyTimeline } from '@/features/energy/components/energy-timeline';
@@ -92,6 +92,7 @@ export function HomeScreen() {
       {/* Native @expo/ui BottomSheet for Rapid Device Inspection */}
       <DeviceQuickSheet
         device={inspectedDevice}
+        color={DataRamp[selectedBubbleIndex % DataRamp.length].bg}
         isOpen={isQuickSheetOpen}
         onClose={() => setIsQuickSheetOpen(false)}
       />

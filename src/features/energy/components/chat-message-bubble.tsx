@@ -12,99 +12,138 @@ interface ChatMessageBubbleProps {
 export function ChatMessageBubble({ message, onCtaPress }: ChatMessageBubbleProps) {
   const isAi = message.who === 'ai';
 
-  return (
-    <View style={[styles.row, isAi ? styles.rowAi : styles.rowMe]}>
-      <View style={[styles.bubble, isAi ? styles.bubbleAi : styles.bubbleMe]}>
-        {/* Message Text */}
-        <Text style={[styles.text, isAi ? styles.textAi : styles.textMe]}>
-          {message.text}
-        </Text>
-
-        {/* Embedded Fact Rows */}
-        {isAi && message.facts && message.facts.length > 0 && (
-          <View style={styles.factsList}>
-            {message.facts.map((fact, idx) => (
-              <View key={idx} style={styles.factCard}>
-                <Text style={styles.factKey}>{fact.k}</Text>
-                <Text style={styles.factVal}>{fact.v}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* Action Button */}
-        {isAi && message.cta && (
-          <Pressable
-            onPress={() => onCtaPress?.(message.cta!)}
-            style={styles.ctaBtn}>
-            <Text style={styles.ctaBtnText}>{message.cta}</Text>
-          </Pressable>
-        )}
+  if (!isAi) {
+    return (
+      <View style={styles.userRow}>
+        <View style={styles.userBubble}>
+          <Text style={styles.userText}>{message.text}</Text>
+        </View>
       </View>
+    );
+  }
+
+  return (
+    <View style={styles.aiBlock}>
+      {/* Editorial Block Header */}
+      <View style={styles.aiHeader}>
+        <View style={styles.aiBadge}>
+          <View style={styles.aiDot} />
+          <Text style={styles.aiBadgeText}>COPILOT</Text>
+        </View>
+        <Text style={styles.aiMetaText}>METER INDEXED</Text>
+      </View>
+
+      {/* Grounded Body Text */}
+      <Text style={styles.aiText}>{message.text}</Text>
+
+      {/* Integrated Provenance Facts Grid */}
+      {message.facts && message.facts.length > 0 && (
+        <View style={styles.factsGrid}>
+          {message.facts.map((fact, idx) => (
+            <View key={idx} style={styles.factCol}>
+              <Text style={styles.factKey} numberOfLines={1}>
+                {fact.k}
+              </Text>
+              <Text style={styles.factVal}>
+                {fact.v}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* Action CTA Button */}
+      {message.cta && (
+        <Pressable
+          onPress={() => onCtaPress?.(message.cta!)}
+          style={styles.ctaBtn}>
+          <Text style={styles.ctaBtnText}>{message.cta} →</Text>
+        </Pressable>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
+  userRow: {
     width: '100%',
     flexDirection: 'row',
-  },
-  rowAi: {
-    justifyContent: 'flex-start',
-  },
-  rowMe: {
     justifyContent: 'flex-end',
+    marginBottom: 4,
   },
-  bubble: {
-    maxWidth: 290,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    gap: 9,
-  },
-  bubbleAi: {
-    backgroundColor: WattPrintTokens.colors.neutralGround, // #F2F4ED
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
-    borderBottomRightRadius: 18,
-    borderBottomLeftRadius: 6,
-  },
-  bubbleMe: {
+  userBubble: {
+    maxWidth: '85%',
     backgroundColor: WattPrintTokens.colors.primary, // #164437
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
-    borderBottomLeftRadius: 18,
-    borderBottomRightRadius: 6,
+    borderRadius: WattPrintTokens.radii.lg,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
   },
-  text: {
-    fontSize: 14,
-    lineHeight: 21,
-  },
-  textAi: {
+  userText: {
     fontFamily: Fonts.sans,
-    color: WattPrintTokens.colors.primary, // #164437
-  },
-  textMe: {
-    fontFamily: Fonts.sans,
+    fontSize: 15,
+    lineHeight: 22,
     color: '#FFFFFF',
   },
-  factsList: {
-    gap: 6,
-    marginTop: 2,
+  aiBlock: {
+    width: '100%',
+    backgroundColor: WattPrintTokens.colors.neutralGround, // #F2F4ED
+    borderRadius: WattPrintTokens.radii.lg,
+    padding: 16,
+    gap: 12,
   },
-  factCard: {
+  aiHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    paddingVertical: 9,
+  },
+  aiBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  aiDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 999,
+    backgroundColor: WattPrintTokens.colors.accentDeep, // #2F7A0C
+  },
+  aiBadgeText: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 11,
+    letterSpacing: 0.6,
+    color: WattPrintTokens.colors.secondary, // #4A6B60
+  },
+  aiMetaText: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 11,
+    letterSpacing: 0.5,
+    color: WattPrintTokens.colors.secondary, // #4A6B60
+  },
+  aiText: {
+    fontFamily: Fonts.sans,
+    fontSize: 15,
+    lineHeight: 22,
+    color: WattPrintTokens.colors.primary, // #164437
+  },
+  factsGrid: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: WattPrintTokens.colors.primaryContainer, // #EFF4E6
+    borderRadius: WattPrintTokens.radii.sm,
+    paddingVertical: 10,
     paddingHorizontal: 12,
+    gap: 8,
+  },
+  factCol: {
+    flex: 1,
+    gap: 3,
   },
   factKey: {
-    fontFamily: Fonts.sans,
-    fontSize: 13,
+    fontFamily: Fonts.monoMedium,
+    fontSize: 11,
+    letterSpacing: 0.4,
     color: WattPrintTokens.colors.secondary, // #4A6B60
+    textTransform: 'uppercase',
   },
   factVal: {
     fontFamily: Fonts.monoMedium,
