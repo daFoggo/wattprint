@@ -22,10 +22,11 @@ export function BubbleBreakdown({
         const slot = BUBBLE_SLOTS[index] ?? { x: 50, y: 50 };
         const ramp = DataRamp[index % DataRamp.length];
         const isSelected = selectedIndex === index;
-        const size = Math.round(40 + device.pct * 2.3);
+        const size = Math.round(52 + device.pct * 2.0);
 
-        const labelFontSize = size > 120 ? 14 : size > 85 ? 12 : 10;
-        const pctFontSize = size > 120 ? 20 : size > 85 ? 14 : 11;
+        const labelFontSize = size > 120 ? 15 : size > 80 ? 13 : 11;
+        const pctFontSize = size > 120 ? 18 : size > 80 ? 14 : 11;
+        const labelLineHeight = Math.round(labelFontSize * 1.25);
 
         return (
           <Pressable
@@ -56,6 +57,7 @@ export function BubbleBreakdown({
                 styles.label,
                 {
                   fontSize: labelFontSize,
+                  lineHeight: labelLineHeight,
                   color: ramp.fg,
                 },
               ]}>
@@ -80,7 +82,7 @@ export function BubbleBreakdown({
 
 const styles = StyleSheet.create({
   container: {
-    height: 296,
+    height: 270,
     width: '100%',
     position: 'relative',
     backgroundColor: '#FFFFFF',
@@ -89,13 +91,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 4,
+    paddingHorizontal: 6,
     // Zero border, zero shadow as required by WattPrint design system
   },
   label: {
     fontFamily: Fonts.sansMedium,
     textAlign: 'center',
-    lineHeight: 14,
   },
   pct: {
     fontFamily: Fonts.monoSemiBold,

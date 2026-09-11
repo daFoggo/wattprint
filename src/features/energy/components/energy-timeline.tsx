@@ -92,8 +92,8 @@ const styles = StyleSheet.create({
   },
   seeAll: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 0.66, // 0.06em
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
   timelineWrapper: {
@@ -122,8 +122,8 @@ const styles = StyleSheet.create({
   },
   timestamp: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11.5,
-    letterSpacing: 0.46, // 0.04em
+    fontSize: 12,
+    letterSpacing: 0.48, // 0.04em
     color: WattPrintTokens.colors.secondary, // #4A6B60
     marginBottom: 7,
   },
@@ -146,8 +146,8 @@ const styles = StyleSheet.create({
   },
   detailLine: {
     fontFamily: Fonts.mono,
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 13,
+    lineHeight: 19.5,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   toggleBtn: {
@@ -160,8 +160,8 @@ const styles = StyleSheet.create({
   },
   toggleLabel: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11.5,
-    letterSpacing: 0.46,
+    fontSize: 12,
+    letterSpacing: 0.48,
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
 });

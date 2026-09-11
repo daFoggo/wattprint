@@ -207,10 +207,10 @@ export function BillingTariffView({
 
         {/* Table Header */}
         <View style={styles.tableHeader}>
-          <View style={{ width: 14 }} />
+          <View style={{ width: 12 }} />
           <Text style={[styles.colHeader, { flex: 1 }]}>BAND</Text>
           <Text style={[styles.colHeader, { width: 56, textAlign: 'right' }]}>USED</Text>
-          <Text style={[styles.colHeader, { width: 76, textAlign: 'right' }]}>COST</Text>
+          <Text style={[styles.colHeader, { width: 80, textAlign: 'right' }]}>COST</Text>
         </View>
 
         {/* Table Rows */}
@@ -253,11 +253,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 8,
   },
   eyebrow: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 1.1,
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
   pillTrack: {
@@ -266,10 +267,11 @@ const styles = StyleSheet.create({
     borderRadius: WattPrintTokens.radii.pill,
     padding: 3,
     gap: 2,
+    flexShrink: 0,
   },
   pillItem: {
     paddingVertical: 5,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     borderRadius: WattPrintTokens.radii.pill,
     backgroundColor: 'transparent',
   },
@@ -278,7 +280,7 @@ const styles = StyleSheet.create({
   },
   pillText: {
     fontFamily: Fonts.sansMedium,
-    fontSize: 11.5,
+    fontSize: 12,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   pillTextActive: {
@@ -327,14 +329,14 @@ const styles = StyleSheet.create({
   },
   dayLabel: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 9.5,
+    fontSize: 12,
     color: WattPrintTokens.colors.secondary,
-    height: 12,
+    height: 15,
   },
   chartFootnote: {
     fontFamily: Fonts.sans,
-    fontSize: 12.5,
-    lineHeight: 18.75,
+    fontSize: 13,
+    lineHeight: 19.5,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   weightBlock: {
@@ -346,8 +348,8 @@ const styles = StyleSheet.create({
   },
   weightEyebrow: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 1.1,
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.tertiary, // #B5E930
   },
   weightText: {
@@ -375,8 +377,8 @@ const styles = StyleSheet.create({
   },
   colHeader: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 10.5,
-    letterSpacing: 0.63,
+    fontSize: 12,
+    letterSpacing: 0.72,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   rowsList: {
@@ -395,25 +397,25 @@ const styles = StyleSheet.create({
   },
   rowName: {
     fontFamily: Fonts.sansMedium,
-    fontSize: 13.5,
+    fontSize: 14,
     color: WattPrintTokens.colors.primary, // #164437
   },
   rowSub: {
     fontFamily: Fonts.mono,
-    fontSize: 11,
+    fontSize: 12,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   rowUsed: {
     width: 56,
     fontFamily: Fonts.monoMedium,
-    fontSize: 13,
+    fontSize: 14,
     color: WattPrintTokens.colors.primary,
     textAlign: 'right',
   },
   rowCost: {
-    width: 76,
+    width: 80,
     fontFamily: Fonts.monoMedium,
-    fontSize: 13,
+    fontSize: 14,
     color: WattPrintTokens.colors.primary,
     textAlign: 'right',
   },
@@ -429,7 +431,7 @@ const styles = StyleSheet.create({
   },
   vatLabel: {
     fontFamily: Fonts.sansMedium,
-    fontSize: 13,
+    fontSize: 14,
     color: WattPrintTokens.colors.primary,
   },
   vatValue: {

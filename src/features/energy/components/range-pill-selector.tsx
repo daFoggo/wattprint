@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: Fonts.sansMedium,
-    fontSize: 13,
+    fontSize: 14,
   },
   labelActive: {
     color: WattPrintTokens.colors.tertiary, // #B5E930 Green Lizard

@@ -121,8 +121,8 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 12,
-    letterSpacing: 0.48, // 0.04em
+    fontSize: 13,
+    letterSpacing: 0.52, // 0.04em
     color: WattPrintTokens.colors.onPrimaryContainer, // #2C5145
   },
 });

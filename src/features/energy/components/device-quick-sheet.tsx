@@ -1,6 +1,6 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { BottomSheet, Host } from '@expo/ui';
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { BottomSheet } from '@expo/ui';
 import { useRouter } from 'expo-router';
 
 import { DataRamp, Fonts, WattPrintTokens } from '@/constants/theme';
@@ -15,6 +15,7 @@ interface DeviceQuickSheetProps {
 
 export function DeviceQuickSheet({ device, color, isOpen, onClose }: DeviceQuickSheetProps) {
   const router = useRouter();
+  const { width } = useWindowDimensions();
 
   if (!device) return null;
 
@@ -26,13 +27,14 @@ export function DeviceQuickSheet({ device, color, isOpen, onClose }: DeviceQuick
   const dotColor = color || DataRamp[0].bg;
 
   return (
-    <Host>
-      <BottomSheet
-        isPresented={isOpen}
-        onDismiss={onClose}
-        snapPoints={['half']}
-        showDragIndicator>
-        <View style={styles.sheetContent}>
+    <BottomSheet
+      isPresented={isOpen}
+      onDismiss={onClose}
+      snapPoints={['half']}
+      showDragIndicator
+      containerColor="#FFFFFF"
+      contentPadding={0}>
+      <View style={[styles.sheetContent, { width, minWidth: width }]}>
           {/* Header with Color Chip */}
           <View style={styles.headerRow}>
             <View style={[styles.colorDot, { backgroundColor: dotColor }]} />
@@ -45,13 +47,13 @@ export function DeviceQuickSheet({ device, color, isOpen, onClose }: DeviceQuick
           {/* Quick Metrics Grid */}
           <View style={styles.metricsGrid}>
             <View style={styles.metricBox}>
-              <Text style={styles.metricLabel}>CONSUMPTION</Text>
+              <Text style={styles.metricLabel} numberOfLines={1}>CONSUMPTION</Text>
               <Text style={styles.metricValue}>
                 {device.kwh} <Text style={styles.metricUnit}>kWh</Text>
               </Text>
             </View>
             <View style={styles.metricBox}>
-              <Text style={styles.metricLabel}>EST. COST</Text>
+              <Text style={styles.metricLabel} numberOfLines={1}>EST. COST</Text>
               <Text style={styles.metricValue}>
                 {Math.round(device.kwh * 2500).toLocaleString('vi-VN')}{' '}
                 <Text style={styles.metricUnit}>VND</Text>
@@ -66,18 +68,20 @@ export function DeviceQuickSheet({ device, color, isOpen, onClose }: DeviceQuick
           </Pressable>
         </View>
       </BottomSheet>
-    </Host>
   );
 }
 
 const styles = StyleSheet.create({
   sheetContent: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 20,
     paddingTop: 8,
     paddingBottom: 28,
     gap: 16,
   },
   headerRow: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
@@ -101,10 +105,11 @@ const styles = StyleSheet.create({
   },
   shareBadgeText: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 12,
+    fontSize: 13,
     color: WattPrintTokens.colors.accentDeep,
   },
   metricsGrid: {
+    width: '100%',
     flexDirection: 'row',
     gap: 10,
   },
@@ -117,8 +122,8 @@ const styles = StyleSheet.create({
   },
   metricLabel: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 10,
-    letterSpacing: 0.8,
+    fontSize: 12,
+    letterSpacing: 0.5,
     color: WattPrintTokens.colors.secondary,
   },
   metricValue: {
@@ -128,10 +133,11 @@ const styles = StyleSheet.create({
   },
   metricUnit: {
     fontFamily: Fonts.mono,
-    fontSize: 12,
+    fontSize: 13,
     color: WattPrintTokens.colors.secondary,
   },
   fullDetailBtn: {
+    width: '100%',
     backgroundColor: WattPrintTokens.colors.primary,
     borderRadius: WattPrintTokens.radii.pill,
     paddingVertical: 14,

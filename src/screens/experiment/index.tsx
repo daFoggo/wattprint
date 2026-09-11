@@ -162,8 +162,8 @@ const styles = StyleSheet.create({
   },
   lede: {
     fontFamily: Fonts.sans,
-    fontSize: 13.5,
-    lineHeight: 20,
+    fontSize: 14,
+    lineHeight: 21,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   statePicker: {
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   statePickerLabel: {
     fontFamily: Fonts.sansMedium,
-    fontSize: 11.5,
+    fontSize: 13,
     color: WattPrintTokens.colors.secondary,
   },
   statePickerLabelActive: {
@@ -200,13 +200,13 @@ const styles = StyleSheet.create({
   },
   pastEyebrow: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 1.1,
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   pastCount: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
+    fontSize: 12,
     color: WattPrintTokens.colors.secondary,
   },
   logList: {
@@ -228,8 +228,8 @@ const styles = StyleSheet.create({
   logTitle: {
     flex: 1,
     fontFamily: Fonts.sansMedium,
-    fontSize: 14.5,
-    lineHeight: 19.5,
+    fontSize: 15,
+    lineHeight: 21,
     color: WattPrintTokens.colors.primary, // #164437
   },
   resultBadge: {
@@ -245,8 +245,8 @@ const styles = StyleSheet.create({
   },
   resultText: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 0.66,
+    fontSize: 12,
+    letterSpacing: 0.5,
   },
   resultTextGood: {
     color: '#1E5A08',
@@ -261,12 +261,12 @@ const styles = StyleSheet.create({
   },
   logDate: {
     fontFamily: Fonts.mono,
-    fontSize: 11.5,
+    fontSize: 13,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   logSaved: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11.5,
+    fontSize: 13,
   },
   logSavedGood: {
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C

@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 12,
-    letterSpacing: 0.72, // 0.06em
+    fontSize: 13,
+    letterSpacing: 0.78, // 0.06em
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   tabLabelActive: {

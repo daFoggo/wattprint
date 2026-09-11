@@ -53,8 +53,11 @@ export function NeighbourComparison({
           {bands.map((band, idx) => (
             <Text
               key={idx}
+              numberOfLines={1}
               style={[
                 styles.bandLabel,
+                idx === 1 && { textAlign: 'center' },
+                idx === 2 && { textAlign: 'right' },
                 band.active && styles.bandLabelActive,
               ]}>
               {band.label}
@@ -78,8 +81,8 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 1.1, // 0.1em
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
   sentence: {
@@ -104,8 +107,8 @@ const styles = StyleSheet.create({
   },
   unit: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 0.66,
+    fontSize: 12,
+    letterSpacing: 0.5,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   bandsRow: {
@@ -127,7 +130,7 @@ const styles = StyleSheet.create({
   bandLabel: {
     flex: 1,
     fontFamily: Fonts.monoMedium,
-    fontSize: 10,
+    fontSize: 11,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   bandLabelActive: {
@@ -135,8 +138,8 @@ const styles = StyleSheet.create({
   },
   footnote: {
     fontFamily: Fonts.sans,
-    fontSize: 12.5,
-    lineHeight: 18.75,
+    fontSize: 13,
+    lineHeight: 19.5,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
 });

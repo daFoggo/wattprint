@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontFamily: Fonts.sansMedium,
-    fontSize: 13,
+    fontSize: 14,
   },
   tabTextActive: {
     color: WattPrintTokens.colors.primary,

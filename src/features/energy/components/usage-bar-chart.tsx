@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
   barLabel: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 10,
+    fontSize: 12,
     color: WattPrintTokens.colors.secondary, // #4A6B60
     textAlign: 'center',
     height: 14,

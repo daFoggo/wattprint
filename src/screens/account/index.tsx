@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   },
   userEmail: {
     fontFamily: Fonts.sans,
-    fontSize: 13,
+    fontSize: 14,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   pairedGrid: {
@@ -153,8 +153,8 @@ const styles = StyleSheet.create({
   },
   statusEyebrow: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 10.5,
-    letterSpacing: 1.05,
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
   statusValue: {
@@ -172,8 +172,8 @@ const styles = StyleSheet.create({
   },
   groupTitle: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 1.1,
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
   groupItems: {
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   },
   itemValue: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 12,
+    fontSize: 13,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   itemChevron: {

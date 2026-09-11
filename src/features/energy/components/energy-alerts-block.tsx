@@ -45,13 +45,13 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 1.1, // 0.1em
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.tertiary, // #B5E930 Green Lizard
   },
   counter: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
+    fontSize: 12,
     color: WattPrintTokens.colors.inkInverseMuted, // #BBD2C9
   },
   list: {

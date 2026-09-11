@@ -148,14 +148,14 @@ const styles = StyleSheet.create({
   },
   backBtn: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    fontSize: 13,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
   editBtn: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    fontSize: 13,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   identityBlock: {
@@ -177,8 +177,8 @@ const styles = StyleSheet.create({
   },
   deviceMeta: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 12,
-    letterSpacing: 0.48,
+    fontSize: 13,
+    letterSpacing: 0.52,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   pairedGrid: {
@@ -196,8 +196,8 @@ const styles = StyleSheet.create({
   },
   statEyebrow: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 10.5,
-    letterSpacing: 1.05,
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
   statValueRow: {
@@ -212,12 +212,12 @@ const styles = StyleSheet.create({
   },
   statUnit: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 12,
+    fontSize: 13,
     color: WattPrintTokens.colors.secondary,
   },
   statLede: {
     fontFamily: Fonts.sans,
-    fontSize: 12.5,
+    fontSize: 14,
     color: WattPrintTokens.colors.secondary,
   },
   card: {
@@ -229,8 +229,8 @@ const styles = StyleSheet.create({
   },
   cardEyebrow: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 1.1,
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
   statsList: {
@@ -262,8 +262,8 @@ const styles = StyleSheet.create({
   },
   weightEyebrow: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 1.1,
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.tertiary, // #B5E930
   },
   weightText: {
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
   },
   weightBtnText: {
     fontFamily: Fonts.sansSemiBold,
-    fontSize: 13,
+    fontSize: 14,
     color: WattPrintTokens.colors.primary, // #164437
   },
 });

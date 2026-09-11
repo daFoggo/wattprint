@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   },
   axisLabel: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 10,
+    fontSize: 12,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   legend: {
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontFamily: Fonts.sansMedium,
-    fontSize: 9.5,
+    fontSize: 12,
     color: WattPrintTokens.colors.secondary,
   },
 });

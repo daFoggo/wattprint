@@ -132,6 +132,21 @@ export const Spacing = {
 export const Radii = WattPrintTokens.radii;
 export const DataRamp = WattPrintTokens.dataRamp;
 
+export const TypeScale = {
+  display: 36, // hero figures
+  h1: 28, // screen title
+  h2: 24, // section title
+  h3: 19, // card title
+  bodyLarge: 17, // emphasized / lead text
+  body: 16, // default UI text
+  bodySmall: 14, // supporting text
+  label: 14, // button / tab / label
+  caption: 13, // metadata
+  overline: 12, // smallest UI text — chart axis, overline-adjacent labels
+} as const;
+
+export type TypeScaleKey = keyof typeof TypeScale;
+
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
 

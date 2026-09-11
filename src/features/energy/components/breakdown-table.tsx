@@ -82,14 +82,14 @@ const styles = StyleSheet.create({
   },
   value: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 13,
+    fontSize: 14,
     color: WattPrintTokens.colors.primary, // #164437
   },
   pct: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 13,
+    fontSize: 14,
     color: WattPrintTokens.colors.secondary, // #4A6B60
-    width: 38,
+    width: 40,
     textAlign: 'right',
   },
 });

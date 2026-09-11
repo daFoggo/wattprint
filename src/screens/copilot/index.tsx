@@ -127,8 +127,8 @@ const styles = StyleSheet.create({
   },
   headerEyebrow: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 1.1,
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.tertiary, // #B5E930
   },
   headerTitle: {
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
   suggestionLabel: {
     fontFamily: Fonts.sansMedium,
-    fontSize: 12.5,
+    fontSize: 14,
     color: '#2C5145',
   },
   inputContainer: {

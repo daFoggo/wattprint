@@ -298,8 +298,8 @@ const styles = StyleSheet.create({
   },
   monthTag: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 0.88,
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   scrollContent: {
@@ -317,8 +317,8 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 1.1,
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
   sentence: {
@@ -364,12 +364,12 @@ const styles = StyleSheet.create({
   },
   unitChipLabel: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11.5,
+    fontSize: 13,
     color: WattPrintTokens.colors.primary,
   },
   pickNote: {
     fontFamily: Fonts.sans,
-    fontSize: 13,
+    fontSize: 14,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   breakdownHeader: {
@@ -396,14 +396,13 @@ const styles = StyleSheet.create({
   },
   pillLabel: {
     fontFamily: Fonts.sansMedium,
-    fontSize: 11.5,
+    fontSize: 13,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   pillLabelActive: {
     color: WattPrintTokens.colors.tertiary, // #B5E930
   },
   bubbleBox: {
-    height: 250,
     width: '100%',
     position: 'relative',
   },
@@ -416,8 +415,8 @@ const styles = StyleSheet.create({
   },
   compareStatLabel: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 0.66,
+    fontSize: 12,
+    letterSpacing: 0.5,
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
   compareStatVal: {

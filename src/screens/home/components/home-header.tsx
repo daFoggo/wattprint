@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
   },
   date: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 0.88, // .08em
+    fontSize: 12,
+    letterSpacing: 0.5,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   greeting: {
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   },
   aiText: {
     fontFamily: Fonts.monoSemiBold,
-    fontSize: 12,
+    fontSize: 13,
     color: WattPrintTokens.colors.primary, // #164437 MSU Green
   },
 });

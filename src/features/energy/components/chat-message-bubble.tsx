@@ -103,12 +103,12 @@ const styles = StyleSheet.create({
   },
   factKey: {
     fontFamily: Fonts.sans,
-    fontSize: 12,
+    fontSize: 13,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   factVal: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 12,
+    fontSize: 13,
     color: WattPrintTokens.colors.primary, // #164437
   },
   ctaBtn: {
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
   ctaBtnText: {
     fontFamily: Fonts.sansSemiBold,
-    fontSize: 12.5,
+    fontSize: 14,
     color: WattPrintTokens.colors.primary, // #164437
   },
 });

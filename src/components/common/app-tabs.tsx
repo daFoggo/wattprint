@@ -16,12 +16,12 @@ export default function AppTabs() {
         default: {
           color: WattPrintTokens.colors.secondary,
           fontFamily: Fonts.sansMedium,
-          fontSize: 10.5,
+          fontSize: 12,
         },
         selected: {
           color: WattPrintTokens.colors.primary,
           fontFamily: Fonts.sansSemiBold,
-          fontSize: 10.5,
+          fontSize: 12,
         },
       }}>
       <NativeTabs.Trigger name="index">

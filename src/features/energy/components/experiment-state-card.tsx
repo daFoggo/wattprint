@@ -177,8 +177,8 @@ const styles = StyleSheet.create({
   },
   tag: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    letterSpacing: 1.1,
+    fontSize: 12,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
   tagRunning: {
@@ -211,8 +211,8 @@ const styles = StyleSheet.create({
   },
   boxLabel: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 10.5,
-    letterSpacing: 0.84,
+    fontSize: 12,
+    letterSpacing: 0.5,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   boxLabelDark: {
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   },
   boxUnit: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 12,
+    fontSize: 13,
     color: WattPrintTokens.colors.secondary,
   },
   boxUnitDark: {
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   },
   stepperLabel: {
     fontFamily: Fonts.sansMedium,
-    fontSize: 13,
+    fontSize: 14,
     color: WattPrintTokens.colors.primary,
   },
   stepperControls: {
@@ -286,8 +286,8 @@ const styles = StyleSheet.create({
   },
   note: {
     fontFamily: Fonts.sans,
-    fontSize: 13,
-    lineHeight: 19.5,
+    fontSize: 14,
+    lineHeight: 21,
     color: WattPrintTokens.colors.secondary,
   },
   noteRunning: {

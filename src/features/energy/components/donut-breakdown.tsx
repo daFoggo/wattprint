@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   centerName: {
     fontFamily: Fonts.sansMedium,
-    fontSize: 12,
+    fontSize: 13,
     color: WattPrintTokens.colors.inkBody,
     textAlign: 'center',
     paddingHorizontal: 8,
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   },
   centerKwh: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 11,
+    fontSize: 13,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
 });
