@@ -40,33 +40,33 @@ export function BillingTariffView({
     ? `${Math.round(MONTH_COST).toLocaleString('en-US')}`
     : `${bizCost.toLocaleString('en-US')}`;
 
-  const warnTag = isHome ? 'TIER FORECAST' : 'PEAK EXPOSURE';
+  const warnTag = isHome ? 'DỰ BÁO BẬC ĐIỆN' : 'CẢNH BÁO GIỜ CAO ĐIỂM';
   const warnText = isHome
-    ? `You are in ${CURRENT_TIER.name.toLowerCase()} with ${Math.round(
+    ? `Bạn đang ở ${CURRENT_TIER.name.toLowerCase()} với mức dự phòng ${Math.round(
         HEADROOM
-      )} kWh of headroom. ${NEXT_TIER.name} is ${STEP_PCT}% dearer, and at the current pace of ${PACE.toFixed(
+      )} kWh. ${NEXT_TIER.name} đắt hơn ${STEP_PCT}%, và với mức tiêu thụ hiện tại ${PACE.toFixed(
         1
-      )} kWh a day you reach it on ${CROSS_DAY} Sep.`
-    : 'Peak energy costs 2.8 times the off peak rate. Moving the laundry cycle after 22:00 would cut about 340,000 VND a month.';
+      )} kWh/ngày, bạn sẽ chạm bậc này vào ngày ${CROSS_DAY}/9.`
+    : 'Điện giờ cao điểm đắt gấp 2,8 lần giờ thấp điểm. Chuyển chu trình giặt sang sau 22:00 sẽ tiết kiệm khoảng 340.000 đ mỗi tháng.';
 
-  const tableTag = isHome ? 'HOUSEHOLD BANDS' : 'TIME OF USE BANDS';
+  const tableTag = isHome ? 'BIỂU PHÍ SINH HOẠT' : 'BIỂU PHÍ THEO KHUNG GIỜ (TOU)';
   const tableTitle = isHome
-    ? 'Six rising bands, applied to your running total.'
-    : 'Three windows priced separately through the day.';
+    ? '6 bậc thang lũy tiến áp dụng trên tổng điện tiêu thụ tích lũy.'
+    : '3 khung giờ có mức giá riêng biệt trong ngày.';
 
   const rows = isHome
     ? TIERS.map((t, i) => ({
         name: t.name,
         sub: t.sub,
         used: `${Math.round(TIER_USED[i])}`,
-        cost: `${Math.round(TIER_USED[i] * t.price).toLocaleString('en-US')}`,
+        cost: `${Math.round(TIER_USED[i] * t.price).toLocaleString('vi-VN')}`,
         color: t.color,
       }))
     : TOU.map((t) => ({
         name: t.name,
         sub: t.sub,
         used: `${Math.round(MONTH_KWH * t.share)}`,
-        cost: `${Math.round(MONTH_KWH * t.share * t.price).toLocaleString('en-US')}`,
+        cost: `${Math.round(MONTH_KWH * t.share * t.price).toLocaleString('vi-VN')}`,
         color: t.color,
       }));
 
@@ -75,7 +75,7 @@ export function BillingTariffView({
       {/* 1. BILL TO DATE CARD */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.eyebrow}>BILL TO DATE</Text>
+          <Text style={styles.eyebrow}>HÓA ĐƠN TẠM TÍNH</Text>
 
           {/* Segmented pill switch: Household / Business */}
           <View style={styles.pillTrack}>
@@ -90,7 +90,7 @@ export function BillingTariffView({
                   styles.pillText,
                   isHome && styles.pillTextActive,
                 ]}>
-                Household
+                Sinh hoạt
               </Text>
             </Pressable>
             <Pressable
@@ -104,7 +104,7 @@ export function BillingTariffView({
                   styles.pillText,
                   !isHome && styles.pillTextActive,
                 ]}>
-                Business
+                Kinh doanh
               </Text>
             </Pressable>
           </View>
@@ -112,8 +112,8 @@ export function BillingTariffView({
 
         <Text style={styles.sentence}>
           {isHome
-            ? `Your bill has reached ${CURRENT_TIER.name.toLowerCase()} with ${DAYS_LEFT} days to go.`
-            : 'A quarter of your energy is landing in the peak window.'}
+            ? `Hóa đơn của bạn đã chạm ${CURRENT_TIER.name.toLowerCase()} và còn ${DAYS_LEFT} ngày trong chu kỳ.`
+            : 'Một phần tư lượng điện tiêu thụ của bạn rơi vào khung giờ cao điểm.'}
         </Text>
 
         <View style={styles.totalRow}>
@@ -160,8 +160,8 @@ export function BillingTariffView({
 
         <Text style={styles.chartFootnote}>
           {isHome
-            ? 'Each column is one day, coloured by the band that energy fell into. Brighter means dearer.'
-            : 'Each column is one day, split across the three time of use windows.'}
+            ? 'Mỗi cột là một ngày, hiển thị theo bậc giá điện tương ứng. Màu càng sáng thì giá càng cao.'
+            : 'Mỗi cột là một ngày, chia theo ba khung giờ sử dụng.'}
         </Text>
       </View>
 
@@ -208,9 +208,9 @@ export function BillingTariffView({
         {/* Table Header */}
         <View style={styles.tableHeader}>
           <View style={{ width: 12 }} />
-          <Text style={[styles.colHeader, { flex: 1 }]}>BAND</Text>
-          <Text style={[styles.colHeader, { width: 56, textAlign: 'right' }]}>USED</Text>
-          <Text style={[styles.colHeader, { width: 80, textAlign: 'right' }]}>COST</Text>
+          <Text style={[styles.colHeader, { flex: 1 }]}>BẬC / KHUNG GIỜ</Text>
+          <Text style={[styles.colHeader, { width: 64, textAlign: 'right' }]}>ĐÃ DÙNG</Text>
+          <Text style={[styles.colHeader, { width: 90, textAlign: 'right' }]}>THÀNH TIỀN</Text>
         </View>
 
         {/* Table Rows */}
@@ -230,7 +230,7 @@ export function BillingTariffView({
 
         {/* Subtotal with VAT container */}
         <View style={styles.vatContainer}>
-          <Text style={styles.vatLabel}>Subtotal plus 8% VAT</Text>
+          <Text style={styles.vatLabel}>Tạm tính gồm 8% VAT</Text>
           <Text style={styles.vatValue}>{totalCostDisplay} VND</Text>
         </View>
       </View>

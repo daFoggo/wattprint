@@ -11,14 +11,14 @@ export function HomeHeader({ onPressAi }: HomeHeaderProps) {
   return (
     <View style={styles.header}>
       <View style={styles.greetingContainer}>
-        <Text style={styles.date}>TUESDAY, 9 SEP</Text>
-        <Text style={styles.greeting}>Good evening, Minh</Text>
+        <Text style={styles.date}>THỨ BA, 9 THÁNG 9</Text>
+        <Text style={styles.greeting}>Chào buổi tối, Minh</Text>
       </View>
 
       <Pressable
         onPress={onPressAi}
         accessibilityRole="button"
-        accessibilityLabel="Open Energy Copilot AI"
+        accessibilityLabel="Mở Trợ lý năng lượng AI"
         style={styles.aiButton}>
         <Text style={styles.aiText}>AI</Text>
       </Pressable>

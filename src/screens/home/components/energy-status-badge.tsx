@@ -13,7 +13,7 @@ const statusColors: Record<EnergyStatus, string> = {
 };
 
 const statusLabels: Record<EnergyStatus, string> = {
-  good: 'All look great!',
+  good: 'Mọi thứ đều ổn!',
   warning: 'Đáng chú ý',
   critical: 'Cần xử lý',
 };

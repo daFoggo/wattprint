@@ -13,8 +13,8 @@ interface ComparisonChartProps {
 export function ComparisonChart({
   nowSeries = [],
   lastSeries = [],
-  axisStart = 'SEP 1',
-  axisEnd = 'SEP 14',
+  axisStart = '01/09',
+  axisEnd = '14/09',
 }: ComparisonChartProps) {
   // Compute cumulative series
   const cumul = (arr: number[]) =>
@@ -75,11 +75,11 @@ export function ComparisonChart({
         <View style={styles.legend}>
           <View style={styles.legendItem}>
             <View style={[styles.legendDot, { backgroundColor: WattPrintTokens.colors.primary }]} />
-            <Text style={styles.legendText}>This month</Text>
+            <Text style={styles.legendText}>Tháng này</Text>
           </View>
           <View style={styles.legendItem}>
             <View style={[styles.legendDot, { backgroundColor: '#C3D2CB' }]} />
-            <Text style={styles.legendText}>Last month</Text>
+            <Text style={styles.legendText}>Tháng trước</Text>
           </View>
         </View>
 

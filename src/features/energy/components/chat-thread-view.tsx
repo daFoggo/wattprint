@@ -57,7 +57,7 @@ export function ChatThreadView({
         <View style={styles.navRow}>
           <Pressable onPress={onBack} hitSlop={12} style={styles.backBtn}>
             <Text style={styles.backArrow}>‹</Text>
-            <Text style={styles.backLabel}>Threads</Text>
+            <Text style={styles.backLabel}>Danh sách</Text>
           </Pressable>
 
           {/* Category & Period Pill */}
@@ -91,7 +91,7 @@ export function ChatThreadView({
         {/* Quick Suggestion Chips if short thread */}
         {thread.messages.length <= 2 && (
           <View style={styles.suggestionsWrap}>
-            <Text style={styles.suggestionsHeader}>SUGGESTED INQUIRIES</Text>
+            <Text style={styles.suggestionsHeader}>CÂU HỎI GỢI Ý</Text>
             <View style={styles.chipsRow}>
               {MOCK_SUGGESTIONS.map((sg, idx) => (
                 <Pressable
@@ -111,7 +111,7 @@ export function ChatThreadView({
         <TextInput
           value={inputText}
           onChangeText={setInputText}
-          placeholder="Ask a follow-up or check a number"
+          placeholder="Hỏi thêm hoặc tra cứu một chỉ số..."
           placeholderTextColor="#7C9588"
           onSubmitEditing={handleSend}
           returnKeyType="send"

@@ -29,17 +29,17 @@ import type { BubbleDevice, BreakdownView, UsageTab } from '@/features/energy/ty
 import { useEnergyStore } from '@/features/energy/use-energy-store';
 
 const TABS: { key: UsageTab; label: string }[] = [
-  { key: 'day', label: 'DAY' },
-  { key: 'week', label: 'WK' },
-  { key: 'month', label: 'MO' },
-  { key: 'year', label: 'YR' },
-  { key: 'bill', label: 'BILL' },
+  { key: 'day', label: 'NGÀY' },
+  { key: 'week', label: 'TUẦN' },
+  { key: 'month', label: 'THÁNG' },
+  { key: 'year', label: 'NĂM' },
+  { key: 'bill', label: 'HÓA ĐƠN' },
 ];
 
 const VIEWS: { key: BreakdownView; label: string }[] = [
-  { key: 'bubble', label: 'Bubble' },
-  { key: 'donut', label: 'Donut' },
-  { key: 'bars', label: 'Bar' },
+  { key: 'bubble', label: 'Bong bóng' },
+  { key: 'donut', label: 'Vành khuyên' },
+  { key: 'bars', label: 'Thanh' },
 ];
 
 export function UsageScreen() {
@@ -66,13 +66,13 @@ export function UsageScreen() {
 
   const deltaText =
     currentRangeData.deltaPct < 0
-      ? `${Math.abs(currentRangeData.deltaPct)}% less`
-      : `${currentRangeData.deltaPct}% more`;
+      ? `ít hơn ${Math.abs(currentRangeData.deltaPct)}%`
+      : `nhiều hơn ${currentRangeData.deltaPct}%`;
 
   const heroValue =
     unit === 'cost'
-      ? `${Math.round(currentRangeData.kwh * RATE).toLocaleString('en-US')}`
-      : `${currentRangeData.kwh.toLocaleString('en-US')}`;
+      ? `${Math.round(currentRangeData.kwh * RATE).toLocaleString('vi-VN')}`
+      : `${currentRangeData.kwh.toLocaleString('vi-VN')}`;
   const heroUnit = unit === 'cost' ? 'VND' : 'kWh';
   const otherUnit = unit === 'cost' ? 'kWh' : 'VND';
 
@@ -82,8 +82,8 @@ export function UsageScreen() {
 
   const monthDeltaText =
     MONTH_DELTA < 0
-      ? `${Math.abs(MONTH_DELTA)}% less`
-      : `${MONTH_DELTA}% more`;
+      ? `ít hơn ${Math.abs(MONTH_DELTA)}%`
+      : `nhiều hơn ${MONTH_DELTA}%`;
 
   const handleDevicePress = (device: BubbleDevice) => {
     router.push('/device-detail');
@@ -94,8 +94,8 @@ export function UsageScreen() {
       {/* Ground Header */}
       <View style={styles.groundHeader}>
         <View style={styles.titleRow}>
-          <Text style={styles.screenTitle}>Usage</Text>
-          <Text style={styles.monthTag}>SEP 2026</Text>
+          <Text style={styles.screenTitle}>Tiêu thụ</Text>
+          <Text style={styles.monthTag}>THÁNG 9/2026</Text>
         </View>
 
         {/* Underline Range Tabs */}
@@ -116,9 +116,9 @@ export function UsageScreen() {
             <Card
               className="border-0 shadow-none bg-white rounded-[20px] p-5 gap-4"
               style={styles.card}>
-              <Text style={styles.eyebrow}>USAGE</Text>
+              <Text style={styles.eyebrow}>TIÊU THỤ</Text>
               <Text style={styles.sentence}>
-                You are using {deltaText} energy {currentRangeData.period}.
+                Bạn đang dùng năng lượng {deltaText} {currentRangeData.period}.
               </Text>
 
               {/* Tappable Hero Value with Unit Switcher */}
@@ -151,7 +151,7 @@ export function UsageScreen() {
               className="border-0 shadow-none bg-white rounded-[20px] p-5 gap-4"
               style={styles.card}>
               <View style={styles.breakdownHeader}>
-                <Text style={styles.eyebrow}>BREAKDOWN</Text>
+                <Text style={styles.eyebrow}>PHÂN BỔ</Text>
 
                 {/* 3 Views Segmented Pill */}
                 <View style={styles.pillTrack}>
@@ -179,7 +179,7 @@ export function UsageScreen() {
               </View>
 
               <Text style={styles.sentence}>
-                {devices[0].name} took {devices[0].pct}% of it,{' '}
+                {devices[0].name} chiếm {devices[0].pct}%, tương đương{' '}
                 {devices[0].kwh.toFixed(1)} kWh.
               </Text>
 
@@ -219,16 +219,16 @@ export function UsageScreen() {
             <Card
               className="border-0 shadow-none bg-white rounded-[20px] p-5 gap-4"
               style={styles.card}>
-              <Text style={styles.eyebrow}>COMPARE</Text>
+              <Text style={styles.eyebrow}>SO SÁNH</Text>
               <Text style={styles.sentence}>
-                You are using {monthDeltaText} energy so far this month.
+                Bạn đang dùng năng lượng {monthDeltaText} từ đầu tháng đến nay.
               </Text>
 
               <View style={styles.compareStatsRow}>
                 <View style={styles.compareStatCol}>
-                  <Text style={styles.compareStatLabel}>THIS MONTH</Text>
+                  <Text style={styles.compareStatLabel}>THÁNG NÀY</Text>
                   <Text style={styles.compareStatVal}>
-                    {MONTH_KWH.toLocaleString('en-US')} kWh
+                    {MONTH_KWH.toLocaleString('vi-VN')} kWh
                   </Text>
                 </View>
                 <View style={styles.compareStatCol}>
@@ -237,14 +237,14 @@ export function UsageScreen() {
                       styles.compareStatLabel,
                       { color: WattPrintTokens.colors.secondary },
                     ]}>
-                    SAME POINT LAST
+                    CÙNG KỲ THÁNG TRƯỚC
                   </Text>
                   <Text
                     style={[
                       styles.compareStatVal,
                       { color: WattPrintTokens.colors.secondary },
                     ]}>
-                    {LAST_TOTAL.toLocaleString('en-US')} kWh
+                    {LAST_TOTAL.toLocaleString('vi-VN')} kWh
                   </Text>
                 </View>
               </View>
@@ -252,14 +252,14 @@ export function UsageScreen() {
               <ComparisonChart
                 nowSeries={DAILY}
                 lastSeries={LAST_DAILY}
-                axisStart="SEP 1"
-                axisEnd="SEP 14"
+                axisStart="01/09"
+                axisEnd="14/09"
               />
             </Card>
 
             {/* CARD 4: NEIGHBOUR COMPARISON */}
             <NeighbourComparison
-              sentence="Your average use is lower than 62% of similar neighbouring homes."
+              sentence="Mức tiêu thụ trung bình của bạn thấp hơn 62% các hộ gia đình tương đương trong khu vực."
               wattage={960}
             />
           </>

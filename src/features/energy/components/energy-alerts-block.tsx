@@ -12,8 +12,8 @@ export function EnergyAlertsBlock({ alerts }: EnergyAlertsBlockProps) {
   return (
     <View style={styles.block}>
       <View style={styles.header}>
-        <Text style={styles.eyebrow}>ALERTS</Text>
-        <Text style={styles.counter}>{alerts.length} new</Text>
+        <Text style={styles.eyebrow}>CẢNH BÁO</Text>
+        <Text style={styles.counter}>{alerts.length} mới</Text>
       </View>
 
       <View style={styles.list}>

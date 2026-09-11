@@ -12,23 +12,23 @@ interface NeighbourComparisonProps {
 export function NeighbourComparison({
   sentence,
   wattage = 960,
-  footnote = 'Compared to 132 WattPrint homes in your district over the last 30 days.',
+  footnote = 'So sánh với 132 hộ gia đình dùng WattPrint trong quận của bạn trong 30 ngày qua.',
 }: NeighbourComparisonProps) {
   const bands = [
-    { label: 'under 1,000 W', active: true },
-    { label: '1,000 to 1,660', active: false },
-    { label: 'over 1,660', active: false },
+    { label: 'dưới 1.000 W', active: true },
+    { label: '1.000 đến 1.660 W', active: false },
+    { label: 'trên 1.660 W', active: false },
   ];
 
   return (
     <View style={styles.container}>
-      <Text style={styles.eyebrow}>COMPARE</Text>
+      <Text style={styles.eyebrow}>SO SÁNH</Text>
       <Text style={styles.sentence}>{sentence}</Text>
 
       <View style={styles.metricSection}>
         <View style={styles.heroRow}>
           <Text style={styles.value}>{wattage}</Text>
-          <Text style={styles.unit}>W AVERAGE, YOU</Text>
+          <Text style={styles.unit}>W TRUNG BÌNH CỦA BẠN</Text>
         </View>
 
         {/* 3 Distribution Bands */}

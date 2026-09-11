@@ -28,9 +28,9 @@ export function ChatMessageBubble({ message, onCtaPress }: ChatMessageBubbleProp
       <View style={styles.aiHeader}>
         <View style={styles.aiBadge}>
           <View style={styles.aiDot} />
-          <Text style={styles.aiBadgeText}>COPILOT</Text>
+          <Text style={styles.aiBadgeText}>TRỢ LÝ AI</Text>
         </View>
-        <Text style={styles.aiMetaText}>METER INDEXED</Text>
+        <Text style={styles.aiMetaText}>ĐÃ ĐỒNG BỘ CÔNG TƠ</Text>
       </View>
 
       {/* Grounded Body Text */}

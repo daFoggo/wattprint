@@ -40,20 +40,20 @@ export function DeviceQuickSheet({ device, color, isOpen, onClose }: DeviceQuick
             <View style={[styles.colorDot, { backgroundColor: dotColor }]} />
             <Text style={styles.deviceName}>{device.name}</Text>
             <View style={styles.shareBadge}>
-              <Text style={styles.shareBadgeText}>{device.pct}% share</Text>
+              <Text style={styles.shareBadgeText}>{device.pct}% tỷ trọng</Text>
             </View>
           </View>
 
           {/* Quick Metrics Grid */}
           <View style={styles.metricsGrid}>
             <View style={styles.metricBox}>
-              <Text style={styles.metricLabel} numberOfLines={1}>CONSUMPTION</Text>
+              <Text style={styles.metricLabel} numberOfLines={1}>TIÊU THỤ</Text>
               <Text style={styles.metricValue}>
                 {device.kwh} <Text style={styles.metricUnit}>kWh</Text>
               </Text>
             </View>
             <View style={styles.metricBox}>
-              <Text style={styles.metricLabel} numberOfLines={1}>EST. COST</Text>
+              <Text style={styles.metricLabel} numberOfLines={1}>ƯỚC TÍNH CHI PHÍ</Text>
               <Text style={styles.metricValue}>
                 {Math.round(device.kwh * 2500).toLocaleString('vi-VN')}{' '}
                 <Text style={styles.metricUnit}>VND</Text>
@@ -63,7 +63,7 @@ export function DeviceQuickSheet({ device, color, isOpen, onClose }: DeviceQuick
 
           {/* Action Button to Full Screen */}
           <Pressable style={styles.fullDetailBtn} onPress={handleOpenFullDetail}>
-            <Text style={styles.fullDetailText}>Open Device Analytics</Text>
+            <Text style={styles.fullDetailText}>Xem phân tích thiết bị</Text>
             <Text style={styles.fullDetailArrow}>›</Text>
           </Pressable>
         </View>

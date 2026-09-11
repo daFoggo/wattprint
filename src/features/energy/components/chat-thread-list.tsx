@@ -19,9 +19,9 @@ interface ChatThreadListProps {
 }
 
 const SECTION_ORDER: { key: ChatThread['group']; label: string }[] = [
-  { key: 'today', label: 'TODAY' },
-  { key: 'this_week', label: 'THIS WEEK' },
-  { key: 'earlier', label: 'EARLIER' },
+  { key: 'today', label: 'HÔM NAY' },
+  { key: 'this_week', label: 'TUẦN NÀY' },
+  { key: 'earlier', label: 'TRƯỚC ĐÓ' },
 ];
 
 export function ChatThreadList({
@@ -67,8 +67,8 @@ export function ChatThreadList({
         keyboardShouldPersistTaps="handled">
         {/* Header: Copilot + Threads Count */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Copilot</Text>
-          <Text style={styles.headerCount}>{threads.length} THREADS</Text>
+          <Text style={styles.headerTitle}>Trợ lý AI</Text>
+          <Text style={styles.headerCount}>{threads.length} CUỘC HỘI THOẠI</Text>
         </View>
 
         {/* Search Pill Bar */}
@@ -76,7 +76,7 @@ export function ChatThreadList({
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search your threads"
+            placeholder="Tìm kiếm cuộc hội thoại"
             placeholderTextColor="#7C9588"
             style={styles.searchInput}
             clearButtonMode="while-editing"
@@ -138,7 +138,7 @@ export function ChatThreadList({
       {/* Floating Action Button: + New thread */}
       <Pressable onPress={onNewThread} style={styles.fab}>
         <Text style={styles.fabIcon}>+</Text>
-        <Text style={styles.fabLabel}>New thread</Text>
+        <Text style={styles.fabLabel}>Hội thoại mới</Text>
       </Pressable>
     </View>
   );

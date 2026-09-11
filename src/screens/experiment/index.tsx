@@ -11,10 +11,10 @@ import type { ExperimentState } from '@/features/energy/types';
 import { useEnergyStore } from '@/features/energy/use-energy-store';
 
 const EXP_STATES: { key: ExperimentState; label: string }[] = [
-  { key: 'running', label: 'Running' },
-  { key: 'summary', label: 'Idle' },
-  { key: 'suggest', label: 'Suggested' },
-  { key: 'locked', label: 'No baseline' },
+  { key: 'running', label: 'Đang chạy' },
+  { key: 'summary', label: 'Tạm dừng' },
+  { key: 'suggest', label: 'Gợi ý' },
+  { key: 'locked', label: 'Chưa có mức nền' },
 ];
 
 export function ExperimentScreen() {
@@ -50,10 +50,10 @@ export function ExperimentScreen() {
         showsVerticalScrollIndicator={false}>
         {/* Ground Title & Lede */}
         <View style={styles.groundHeader}>
-          <Text style={styles.title}>Experiments</Text>
+          <Text style={styles.title}>Thử nghiệm</Text>
           <Text style={styles.lede}>
-            Change one habit for a few days. The baseline is already recorded, so
-            nothing needs logging.
+            Thay đổi một thói quen trong vài ngày. Mức tiêu thụ nền đã được ghi nhận tự động,
+            không cần nhập liệu thủ công.
           </Text>
         </View>
 
@@ -92,8 +92,8 @@ export function ExperimentScreen() {
 
         {/* Past Experiments Section */}
         <View style={styles.pastHeader}>
-          <Text style={styles.pastEyebrow}>PAST EXPERIMENTS</Text>
-          <Text style={styles.pastCount}>{MOCK_EXP_LOG.length} TOTAL</Text>
+          <Text style={styles.pastEyebrow}>THỬ NGHIỆM ĐÃ QUA</Text>
+          <Text style={styles.pastCount}>TỔNG CỘNG {MOCK_EXP_LOG.length}</Text>
         </View>
 
         <View style={styles.logList}>
@@ -127,7 +127,7 @@ export function ExperimentScreen() {
                     log.good ? styles.logSavedGood : styles.logSavedDropped,
                   ]}>
                   {log.savedVnd > 0
-                    ? `${log.savedVnd.toLocaleString('en-US')} VND saved`
+                    ? `tiết kiệm ${log.savedVnd.toLocaleString('vi-VN')} đ`
                     : log.note}
                 </Text>
               </View>

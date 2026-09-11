@@ -17,19 +17,19 @@ export default function AppTabs() {
       <TabList asChild>
         <CustomTabList>
           <TabTrigger name="index" href="/" asChild>
-            <TabButton>Home</TabButton>
+            <TabButton>Trang chủ</TabButton>
           </TabTrigger>
           <TabTrigger name="usage" href="/usage" asChild>
-            <TabButton>Usage</TabButton>
+            <TabButton>Tiêu thụ</TabButton>
           </TabTrigger>
           <TabTrigger name="copilot" href="/copilot" asChild>
-            <TabButton>Copilot</TabButton>
+            <TabButton>Trợ lý AI</TabButton>
           </TabTrigger>
           <TabTrigger name="experiment" href="/experiment" asChild>
-            <TabButton>Lab</TabButton>
+            <TabButton>Thử nghiệm</TabButton>
           </TabTrigger>
           <TabTrigger name="account" href="/account" asChild>
-            <TabButton>Account</TabButton>
+            <TabButton>Tài khoản</TabButton>
           </TabTrigger>
         </CustomTabList>
       </TabList>

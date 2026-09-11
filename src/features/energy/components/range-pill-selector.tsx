@@ -10,9 +10,9 @@ interface RangePillSelectorProps {
 }
 
 const RANGES: { key: DashboardRange; label: string }[] = [
-  { key: 'day', label: 'Day' },
-  { key: 'week', label: 'Week' },
-  { key: 'month', label: 'Month' },
+  { key: 'day', label: 'Ngày' },
+  { key: 'week', label: 'Tuần' },
+  { key: 'month', label: 'Tháng' },
 ];
 
 export function RangePillSelector({

@@ -18,7 +18,7 @@ export function AccountScreen() {
         showsVerticalScrollIndicator={false}>
         {/* Identity on Ground */}
         <View style={styles.groundHeader}>
-          <Text style={styles.title}>Account</Text>
+          <Text style={styles.title}>Tài khoản</Text>
           <View style={styles.profileRow}>
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>MK</Text>
@@ -33,12 +33,12 @@ export function AccountScreen() {
         {/* Paired Status Cards */}
         <View style={styles.pairedGrid}>
           <Card style={styles.statusCard}>
-            <Text style={styles.statusEyebrow}>TARIFF</Text>
-            <Text style={styles.statusValue}>Household</Text>
+            <Text style={styles.statusEyebrow}>BIỂU PHÍ</Text>
+            <Text style={styles.statusValue}>Sinh hoạt</Text>
           </Card>
           <Card style={styles.statusCard}>
-            <Text style={styles.statusEyebrow}>SENSOR</Text>
-            <Text style={styles.statusValue}>Connected</Text>
+            <Text style={styles.statusEyebrow}>CẢM BIẾN</Text>
+            <Text style={styles.statusValue}>Đã kết nối</Text>
           </Card>
         </View>
 
@@ -48,8 +48,10 @@ export function AccountScreen() {
             <Text style={styles.groupTitle}>{group.title}</Text>
             <View style={styles.groupItems}>
               {group.items.map((item: { label: string; value: string }, idx: number) => {
-                const isTierWarning = item.label === 'Tier warnings';
-                const isPhantomAlert = item.label === 'Phantom load alerts';
+                const isTierWarning =
+                  item.label === 'Cảnh báo nhảy bậc điện' || item.label === 'Tier warnings';
+                const isPhantomAlert =
+                  item.label === 'Cảnh báo tải chờ ban đêm' || item.label === 'Phantom load alerts';
                 const isToggle = isTierWarning || isPhantomAlert;
 
                 return (
@@ -79,7 +81,7 @@ export function AccountScreen() {
 
         {/* Sign Out Button */}
         <Pressable style={styles.signOutBtn}>
-          <Text style={styles.signOutText}>Sign out</Text>
+          <Text style={styles.signOutText}>Đăng xuất</Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>

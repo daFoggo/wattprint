@@ -37,43 +37,43 @@ export function ExperimentStateCard({
   let rightUnit = '';
 
   if (isRunning) {
-    tag = 'RUNNING, DAY 3 OF 7';
-    title = 'Living room air con at 27 with a fan, instead of 24';
-    note = 'Down 38%, about 85,000 VND a week. Four days left before the comfort check.';
-    btnLabel = 'Finish the experiment';
-    leftLabel = 'BASELINE';
+    tag = 'ĐANG CHẠY, NGÀY 3/7';
+    title = 'Điều hòa phòng khách 27°C kèm quạt, thay vì 24°C';
+    note = 'Giảm 38%, khoảng 85.000 đ mỗi tuần. Còn 4 ngày nữa đến đợt khảo sát độ thoải mái.';
+    btnLabel = 'Kết thúc thử nghiệm';
+    leftLabel = 'MỨC NỀN';
     leftVal = '8.2';
-    leftUnit = 'kWh/day';
-    rightLabel = 'NOW';
+    leftUnit = 'kWh/ngày';
+    rightLabel = 'HIỆN TẠI';
     rightVal = '5.1';
-    rightUnit = 'kWh/day';
+    rightUnit = 'kWh/ngày';
   } else if (isSummary) {
-    tag = 'NOTHING RUNNING';
-    title = `${EXP_KEPT} of ${EXP_LOG.length} experiments kept so far`;
-    note = 'Air con is still the largest single load. A second pass on the water heater window is the next best target.';
-    btnLabel = 'Start a new experiment';
-    leftLabel = 'SAVED TO DATE';
+    tag = 'CHƯA CÓ THỬ NGHIỆM ĐANG CHẠY';
+    title = `Đã duy trì ${EXP_KEPT} trên ${EXP_LOG.length} thử nghiệm đến nay`;
+    note = 'Điều hòa vẫn là tải tiêu thụ lớn nhất. Tối ưu khung giờ bình nóng lạnh là mục tiêu tiềm năng tiếp theo.';
+    btnLabel = 'Bắt đầu thử nghiệm mới';
+    leftLabel = 'ĐÃ TIẾT KIỆM';
     leftVal = `${Math.round(EXP_SAVED / 1000)}k`;
     leftUnit = 'VND';
-    rightLabel = 'HABITS KEPT';
+    rightLabel = 'THÓI QUEN DUY TRÌ';
     rightVal = String(EXP_KEPT);
-    rightUnit = `of ${EXP_LOG.length}`;
+    rightUnit = `trên ${EXP_LOG.length}`;
   } else if (isSuggest) {
-    tag = 'SUGGESTED FOR YOU';
-    title = `Hold the living room air con at ${temp.toFixed(1)} with a fan`;
-    note = 'Three days, then one question about how it felt. Adjust the target before you start.';
-    btnLabel = 'Start the 3 day experiment';
-    leftLabel = 'BASELINE';
+    tag = 'GỢI Ý CHO BẠN';
+    title = `Giữ điều hòa phòng khách ở ${temp.toFixed(1)}°C kết hợp quạt`;
+    note = 'Thử nghiệm trong 3 ngày, sau đó trả lời một câu hỏi về cảm nhận. Điều chỉnh nhiệt độ mục tiêu trước khi bắt đầu.';
+    btnLabel = 'Bắt đầu thử nghiệm 3 ngày';
+    leftLabel = 'MỨC NỀN';
     leftVal = '8.2';
-    leftUnit = 'kWh/day';
-    rightLabel = 'ESTIMATED';
+    leftUnit = 'kWh/ngày';
+    rightLabel = 'ƯỚC TÍNH';
     rightVal = '5.4';
-    rightUnit = 'kWh/day';
+    rightUnit = 'kWh/ngày';
   } else {
-    tag = 'LOCKED';
-    title = 'Still learning your baseline';
-    note = 'Experiments compare against your own history, so the meter needs 4 more days of clean readings. Nothing to do until then.';
-    btnLabel = 'Available in 4 days';
+    tag = 'ĐANG KHÓA';
+    title = 'Đang ghi nhận mức tiêu thụ nền';
+    note = 'Các thử nghiệm so sánh dựa trên lịch sử của bạn, nên công tơ cần thêm 4 ngày đo đạc ổn định. Chưa cần thao tác gì lúc này.';
+    btnLabel = 'Khả dụng sau 4 ngày';
   }
 
   return (
@@ -127,7 +127,7 @@ export function ExperimentStateCard({
       {/* Temperature Stepper (only in suggested mode) */}
       {isSuggest && (
         <View style={styles.stepperContainer}>
-          <Text style={styles.stepperLabel}>Target temperature</Text>
+          <Text style={styles.stepperLabel}>Nhiệt độ mục tiêu</Text>
           <View style={styles.stepperControls}>
             <Pressable onPress={onMinusTemp} style={styles.stepBtn}>
               <Text style={styles.stepBtnText}>-</Text>

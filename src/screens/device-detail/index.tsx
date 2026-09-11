@@ -14,10 +14,10 @@ import {
 } from '@/features/energy/mock';
 
 const DEV_TABS = [
-  { key: 'day', label: 'DAY' },
-  { key: 'week', label: 'WK' },
-  { key: 'month', label: 'MO' },
-  { key: 'year', label: 'YR' },
+  { key: 'day', label: 'NGÀY' },
+  { key: 'week', label: 'TUẦN' },
+  { key: 'month', label: 'THÁNG' },
+  { key: 'year', label: 'NĂM' },
 ];
 
 export function DeviceDetailScreen() {
@@ -40,10 +40,10 @@ export function DeviceDetailScreen() {
         {/* Top Bar Actions on Ground */}
         <View style={styles.topActionsRow}>
           <Pressable onPress={() => router.back()} hitSlop={10}>
-            <Text style={styles.backBtn}>BACK</Text>
+            <Text style={styles.backBtn}>QUAY LẠI</Text>
           </Pressable>
           <Pressable hitSlop={10}>
-            <Text style={styles.editBtn}>EDIT</Text>
+            <Text style={styles.editBtn}>SỬA</Text>
           </Pressable>
         </View>
 
@@ -60,24 +60,24 @@ export function DeviceDetailScreen() {
           <Card
             className="border-0 shadow-none bg-white rounded-[20px] p-4 gap-1.5"
             style={styles.statCard}>
-            <Text style={styles.statEyebrow}>AVERAGE</Text>
+            <Text style={styles.statEyebrow}>CÔNG SUẤT TRUNG BÌNH</Text>
             <View style={styles.statValueRow}>
               <Text style={styles.statValue}>{device.avgW}</Text>
               <Text style={styles.statUnit}>W</Text>
             </View>
-            <Text style={styles.statLede}>while on</Text>
+            <Text style={styles.statLede}>khi đang bật</Text>
           </Card>
 
           {/* Card 2: Cost */}
           <Card
             className="border-0 shadow-none bg-white rounded-[20px] p-4 gap-1.5"
             style={styles.statCard}>
-            <Text style={styles.statEyebrow}>COST</Text>
+            <Text style={styles.statEyebrow}>CHI PHÍ</Text>
             <View style={styles.statValueRow}>
               <Text style={styles.statValue}>{device.costMonth}</Text>
-              <Text style={styles.statUnit}>k/mo</Text>
+              <Text style={styles.statUnit}>nghìn/tháng</Text>
             </View>
-            <Text style={styles.statLede}>based on your usage</Text>
+            <Text style={styles.statLede}>theo mức dùng của bạn</Text>
           </Card>
         </View>
 
@@ -85,7 +85,7 @@ export function DeviceDetailScreen() {
         <Card
           className="border-0 shadow-none bg-white rounded-[20px] p-5 gap-4"
           style={styles.card}>
-          <Text style={styles.cardEyebrow}>USAGE</Text>
+          <Text style={styles.cardEyebrow}>MỨC TIÊU THỤ</Text>
 
           {/* Underline Range Tabs */}
           <UnderlineTabRow
@@ -117,11 +117,11 @@ export function DeviceDetailScreen() {
         <Card
           className="border-0 shadow-none bg-[#164437] rounded-[20px] p-5 gap-3"
           style={styles.weightBlock}>
-          <Text style={styles.weightEyebrow}>COPILOT NOTE</Text>
+          <Text style={styles.weightEyebrow}>GHI CHÚ TỪ TRỢ LÝ AI</Text>
           <Text style={styles.weightText}>{device.note}</Text>
 
           <Pressable onPress={handleStartTest} style={styles.weightBtn}>
-            <Text style={styles.weightBtnText}>Start a 3 day test</Text>
+            <Text style={styles.weightBtnText}>Bắt đầu thử nghiệm 3 ngày</Text>
           </Pressable>
         </Card>
       </ScrollView>

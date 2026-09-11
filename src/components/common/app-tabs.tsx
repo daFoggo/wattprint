@@ -25,27 +25,27 @@ export default function AppTabs() {
         },
       }}>
       <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>Trang chủ</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="usage">
-        <NativeTabs.Trigger.Label>Usage</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>Tiêu thụ</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="chart.bar.fill" md="bar_chart" />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="copilot">
-        <NativeTabs.Trigger.Label>Copilot</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>Trợ lý AI</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="sparkles" md="auto_awesome" />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="experiment">
-        <NativeTabs.Trigger.Label>Lab</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>Thử nghiệm</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="flask.fill" md="science" />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="account">
-        <NativeTabs.Trigger.Label>Account</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>Tài khoản</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="person.crop.circle.fill" md="person" />
       </NativeTabs.Trigger>
     </NativeTabs>

@@ -24,14 +24,14 @@ export function HeroMetric({
   onToggleUnit,
 }: HeroMetricProps) {
   const isKwh = unitMode === 'kwh';
-  const deltaWord = deltaPct < 0 ? `${Math.abs(deltaPct)}% less` : `${deltaPct}% more`;
+  const deltaWord = deltaPct < 0 ? `giảm ${Math.abs(deltaPct)}%` : `tăng ${deltaPct}%`;
   const headline = isKwh
     ? `${kwh.toFixed(1)} kWh`
-    : `${Math.round(cost).toLocaleString('en-US')} VND`;
+    : `${Math.round(cost).toLocaleString('vi-VN')} VND`;
 
   const bigValue = isKwh
     ? kwh.toFixed(1)
-    : Math.round(cost).toLocaleString('en-US');
+    : Math.round(cost).toLocaleString('vi-VN');
   const bigUnit = isKwh ? 'kWh' : 'VND';
   const otherUnit = isKwh ? 'VND' : 'kWh';
 
@@ -40,10 +40,10 @@ export function HeroMetric({
       <Pressable
         onPress={onToggleUnit}
         accessibilityRole="button"
-        accessibilityLabel={`Toggle unit. Currently ${bigValue} ${bigUnit}. Tap to switch to ${otherUnit}.`}
+        accessibilityLabel={`Đổi đơn vị. Hiện tại là ${bigValue} ${bigUnit}. Nhấn để chuyển sang ${otherUnit}.`}
         style={styles.pressable}>
         <Text style={styles.sentence}>
-          You have used <Text style={styles.sentenceHighlight}>{headline}</Text> {period}, {deltaWord} {comparison}.
+          Bạn đã dùng <Text style={styles.sentenceHighlight}>{headline}</Text> {period}, {deltaWord} so với {comparison}.
         </Text>
 
         <View style={styles.metricRow}>

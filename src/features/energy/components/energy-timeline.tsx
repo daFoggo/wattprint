@@ -19,9 +19,9 @@ export function EnergyTimeline({ events, onSeeAll }: EnergyTimelineProps) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Today</Text>
+        <Text style={styles.title}>Hôm nay</Text>
         <Pressable onPress={onSeeAll} hitSlop={8}>
-          <Text style={styles.seeAll}>SEE ALL</Text>
+          <Text style={styles.seeAll}>XEM TẤT CẢ</Text>
         </Pressable>
       </View>
 
@@ -60,7 +60,7 @@ export function EnergyTimeline({ events, onSeeAll }: EnergyTimelineProps) {
                     onPress={() => toggleExpand(event.id)}
                     style={styles.toggleBtn}>
                     <Text style={styles.toggleLabel}>
-                      {isExpanded ? 'Hide runs' : `Show ${event.detail.length} runs`}
+                      {isExpanded ? 'Ẩn chi tiết' : `Xem ${event.detail.length} lần chạy`}
                     </Text>
                   </Pressable>
                 )}

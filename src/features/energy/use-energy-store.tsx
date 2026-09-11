@@ -86,17 +86,17 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
     const newId = `thread-${Date.now()}`;
     const newThread: ChatThread = {
       id: newId,
-      title: title || 'New inquiry',
-      category: 'GENERAL',
-      period: 'TODAY',
-      timeAgo: 'Just now',
+      title: title || 'Cuộc hội thoại mới',
+      category: 'CHUNG',
+      period: 'HÔM NAY',
+      timeAgo: 'Vừa xong',
       group: 'today',
       dotColor: '#B5E930',
       messages: [
         {
           id: `msg-${Date.now()}`,
           who: 'ai',
-          text: 'Good evening. Your meter is live and the last 30 days are indexed. Ask about a number and I will show where it comes from.',
+          text: 'Chào buổi tối. Công tơ điện của bạn đang hoạt động và đã đồng bộ dữ liệu 30 ngày qua. Hãy hỏi về bất kỳ chỉ số nào để xem chi tiết nguồn gốc.',
           facts: [],
         },
       ],
@@ -126,21 +126,21 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
       let facts = Array.isArray(hit.facts) ? hit.facts : [];
 
       if (hit.a === 'TIER_ANSWER') {
-        ansText = `You are at ${MONTH_KWH} kWh with ${DAYS_LEFT} days left in the cycle. Staying inside ${CURRENT_TIER.name.toLowerCase()} means holding ${budget.toFixed(1)} kWh a day against your current ${PACE.toFixed(1)}. Shifting the water heater to the 22:00 window covers about half of the gap.`;
+        ansText = `Bạn đã dùng ${MONTH_KWH} kWh và còn ${DAYS_LEFT} ngày nữa trong chu kỳ. Để duy trì ở ${CURRENT_TIER.name.toLowerCase()}, bạn cần giữ mức dùng ${budget.toFixed(1)} kWh/ngày so với mức ${PACE.toFixed(1)} hiện tại. Chuyển bình nóng lạnh sang khung giờ 22:00 sẽ bù đắp được khoảng một nửa khoảng cách này.`;
         facts = [
-          { k: 'Used so far', v: `${MONTH_KWH} kWh` },
-          { k: 'Headroom', v: `${HEADROOM} kWh` },
-          { k: 'Daily budget', v: `${budget.toFixed(1)} kWh` },
+          { k: 'Đã dùng đến nay', v: `${MONTH_KWH} kWh` },
+          { k: 'Mức dự phòng', v: `${HEADROOM} kWh` },
+          { k: 'Hạn mức ngày', v: `${budget.toFixed(1)} kWh` },
         ];
       } else if (hit.a === 'PHANTOM_ANSWER') {
         const W = 35;
         const kwh = (W * 24 * 30) / 1000;
         const vnd = kwh * CURRENT_TIER.price;
-        ansText = `Between 02:00 and 05:00 the flat floor sits at ${W} W after the fridge cycle is removed. That is about ${kwh.toFixed(0)} kWh a month from the TV cluster and the router shelf, billed at your marginal band, ${CURRENT_TIER.name.toLowerCase()}, so roughly ${Math.round(vnd).toLocaleString('en-US')} VND.`;
+        ansText = `Từ 02:00 đến 05:00 sáng, công suất nền ổn định ở mức ${W} W sau khi loại trừ chu kỳ tủ lạnh. Mức này tiêu tốn khoảng ${kwh.toFixed(0)} kWh/tháng từ cụm TV và modem wifi, tính theo bậc cận biên (${CURRENT_TIER.name.toLowerCase()}), tương đương khoảng ${Math.round(vnd).toLocaleString('vi-VN')} đ.`;
         facts = [
-          { k: 'Standby power', v: `${W} W` },
-          { k: 'Monthly waste', v: `${kwh.toFixed(0)} kWh` },
-          { k: `At ${CURRENT_TIER.name} rate`, v: `${Math.round(vnd).toLocaleString('en-US')} VND` },
+          { k: 'Công suất chờ', v: `${W} W` },
+          { k: 'Lãng phí hàng tháng', v: `${kwh.toFixed(0)} kWh` },
+          { k: `Tính theo ${CURRENT_TIER.name}`, v: `${Math.round(vnd).toLocaleString('vi-VN')} đ` },
         ];
       }
 
@@ -155,10 +155,10 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
       aiMsg = {
         id: `ai-${Date.now() + 1}`,
         who: 'ai',
-        text: 'I read that against your meter, the weather feed and the current EVN bands. Nothing in the last 30 days explains a change of that size on its own, so the honest answer is that it is within normal variation.',
+        text: 'Tôi đã đối chiếu số liệu với công tơ, thời tiết và biểu phí EVN hiện hành. Không có yếu tố đơn lẻ nào trong 30 ngày qua giải thích cho sự chênh lệch này, mức biến động vẫn nằm trong giới hạn bình thường.',
         facts: [
-          { k: 'Days indexed', v: '30' },
-          { k: 'Confidence', v: 'Medium' },
+          { k: 'Số ngày đồng bộ', v: '30' },
+          { k: 'Độ tin cậy', v: 'Trung bình' },
         ],
       };
     }
@@ -166,29 +166,29 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
     setThreads((prev) =>
       prev.map((th) => {
         if (th.id === threadId) {
-          const isNewInquiry = th.title === 'New inquiry';
+          const isNewInquiry = th.title === 'Cuộc hội thoại mới' || th.title === 'New inquiry';
           const newTitle = isNewInquiry ? trimmed : th.title;
           let newCategory = th.category;
           let newDotColor = th.dotColor;
           if (isNewInquiry) {
             const lower = trimmed.toLowerCase();
-            if (lower.includes('bill') || lower.includes('tier')) {
-              newCategory = 'BILL';
+            if (lower.includes('bill') || lower.includes('tier') || lower.includes('bậc') || lower.includes('hóa đơn')) {
+              newCategory = 'HÓA ĐƠN';
               newDotColor = '#2F7A0C';
-            } else if (lower.includes('ac') || lower.includes('air')) {
-              newCategory = 'AIR CON';
+            } else if (lower.includes('ac') || lower.includes('air') || lower.includes('điều hòa')) {
+              newCategory = 'ĐIỀU HÒA';
               newDotColor = '#B5E930';
-            } else if (lower.includes('phantom') || lower.includes('standby')) {
-              newCategory = 'ALWAYS ON';
+            } else if (lower.includes('phantom') || lower.includes('standby') || lower.includes('chạy ngầm') || lower.includes('chờ')) {
+              newCategory = 'CHẠY NGẦM';
               newDotColor = '#4A6B60';
-            } else if (lower.includes('water') || lower.includes('heat')) {
-              newCategory = 'WATER HEATER';
+            } else if (lower.includes('water') || lower.includes('heat') || lower.includes('nóng lạnh')) {
+              newCategory = 'BÌNH NÓNG LẠNH';
               newDotColor = '#B5E930';
-            } else if (lower.includes('fridge')) {
-              newCategory = 'FRIDGE';
+            } else if (lower.includes('fridge') || lower.includes('tủ lạnh')) {
+              newCategory = 'TỦ LẠNH';
               newDotColor = '#164437';
-            } else if (lower.includes('cook')) {
-              newCategory = 'COOKTOP';
+            } else if (lower.includes('cook') || lower.includes('bếp')) {
+              newCategory = 'BẾP TỪ';
               newDotColor = '#8CD41C';
             }
           }
@@ -197,7 +197,7 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
             title: newTitle,
             category: newCategory,
             dotColor: newDotColor,
-            timeAgo: 'Just now',
+            timeAgo: 'Vừa xong',
             messages: [...th.messages, userMsg, aiMsg],
           };
         }
@@ -228,21 +228,21 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
       let facts = Array.isArray(hit.facts) ? hit.facts : [];
 
       if (hit.a === 'TIER_ANSWER') {
-        text = `You are at ${MONTH_KWH} kWh with ${DAYS_LEFT} days left in the cycle. Staying inside ${CURRENT_TIER.name.toLowerCase()} means holding ${budget.toFixed(1)} kWh a day against your current ${PACE.toFixed(1)}. Shifting the water heater to the 22:00 window covers about half of the gap.`;
+        text = `Bạn đã dùng ${MONTH_KWH} kWh và còn ${DAYS_LEFT} ngày nữa trong chu kỳ. Để duy trì ở ${CURRENT_TIER.name.toLowerCase()}, bạn cần giữ mức dùng ${budget.toFixed(1)} kWh/ngày so với mức ${PACE.toFixed(1)} hiện tại. Chuyển bình nóng lạnh sang khung giờ 22:00 sẽ bù đắp được khoảng một nửa khoảng cách này.`;
         facts = [
-          { k: 'Used so far', v: `${MONTH_KWH} kWh` },
-          { k: 'Headroom', v: `${HEADROOM} kWh` },
-          { k: 'Daily budget', v: `${budget.toFixed(1)} kWh` },
+          { k: 'Đã dùng đến nay', v: `${MONTH_KWH} kWh` },
+          { k: 'Mức dự phòng', v: `${HEADROOM} kWh` },
+          { k: 'Hạn mức ngày', v: `${budget.toFixed(1)} kWh` },
         ];
       } else if (hit.a === 'PHANTOM_ANSWER') {
         const W = 35;
         const kwh = (W * 24 * 30) / 1000;
         const vnd = kwh * CURRENT_TIER.price;
-        text = `Between 02:00 and 05:00 the flat floor sits at ${W} W after the fridge cycle is removed. That is about ${kwh.toFixed(0)} kWh a month from the TV cluster and the router shelf, billed at your marginal band, ${CURRENT_TIER.name.toLowerCase()}, so roughly ${Math.round(vnd).toLocaleString('en-US')} VND.`;
+        text = `Từ 02:00 đến 05:00 sáng, công suất nền ổn định ở mức ${W} W sau khi loại trừ chu kỳ tủ lạnh. Mức này tiêu tốn khoảng ${kwh.toFixed(0)} kWh/tháng từ cụm TV và modem wifi, tính theo bậc cận biên (${CURRENT_TIER.name.toLowerCase()}), tương đương khoảng ${Math.round(vnd).toLocaleString('vi-VN')} đ.`;
         facts = [
-          { k: 'Standby power', v: `${W} W` },
-          { k: 'Monthly waste', v: `${kwh.toFixed(0)} kWh` },
-          { k: `At ${CURRENT_TIER.name} rate`, v: `${Math.round(vnd).toLocaleString('en-US')} VND` },
+          { k: 'Công suất chờ', v: `${W} W` },
+          { k: 'Lãng phí hàng tháng', v: `${kwh.toFixed(0)} kWh` },
+          { k: `Tính theo ${CURRENT_TIER.name}`, v: `${Math.round(vnd).toLocaleString('vi-VN')} đ` },
         ];
       }
 
@@ -257,10 +257,10 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
       aiMsg = {
         id: `ai-${Date.now() + 1}`,
         who: 'ai',
-        text: 'I read that against your meter, the weather feed and the current EVN bands. Nothing in the last 30 days explains a change of that size on its own, so the honest answer is that it is within normal variation.',
+        text: 'Tôi đã đối chiếu số liệu với công tơ, thời tiết và biểu phí EVN hiện hành. Không có yếu tố đơn lẻ nào trong 30 ngày qua giải thích cho sự chênh lệch này, mức biến động vẫn nằm trong giới hạn bình thường.',
         facts: [
-          { k: 'Days indexed', v: '30' },
-          { k: 'Confidence', v: 'Medium' },
+          { k: 'Số ngày đồng bộ', v: '30' },
+          { k: 'Độ tin cậy', v: 'Trung bình' },
         ],
       };
     }
