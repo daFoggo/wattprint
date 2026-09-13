@@ -11,7 +11,9 @@ import { UsageBarChart } from '@/features/energy/components/usage-bar-chart';
 import {
   DEVICE_DETAIL_AIRCON,
   DEVICE_WEEK_BARS,
+  getDeviceDetail,
 } from '@/features/energy/mock';
+import type { BubbleDevice } from '@/features/energy/types';
 
 const DEV_TABS = [
   { key: 'day', label: 'NGÀY' },
@@ -20,12 +22,28 @@ const DEV_TABS = [
   { key: 'year', label: 'NĂM' },
 ];
 
-export function DeviceDetailScreen() {
+interface DeviceDetailScreenProps {
+  device?: BubbleDevice | null;
+  onBack?: () => void;
+}
+
+export function DeviceDetailScreen({
+  device: inputDevice,
+  onBack,
+}: DeviceDetailScreenProps = {}) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('week');
   const [selectedBar, setSelectedBar] = useState(2);
 
-  const device = DEVICE_DETAIL_AIRCON;
+  const device = inputDevice ? getDeviceDetail(inputDevice) : DEVICE_DETAIL_AIRCON;
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      router.back();
+    }
+  };
 
   const handleStartTest = () => {
     router.push('/experiment');
@@ -39,7 +57,7 @@ export function DeviceDetailScreen() {
         showsVerticalScrollIndicator={false}>
         {/* Top Bar Actions on Ground */}
         <View style={styles.topActionsRow}>
-          <Pressable onPress={() => router.back()} hitSlop={10}>
+          <Pressable onPress={handleBack} hitSlop={10}>
             <Text style={styles.backBtn}>QUAY LẠI</Text>
           </Pressable>
           <Pressable hitSlop={10}>

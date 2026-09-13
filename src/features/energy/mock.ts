@@ -314,6 +314,75 @@ export const DEVICE_DETAIL_AIRCON: DeviceDetailData = {
   ],
 };
 
+export function getDeviceDetail(device: BubbleDevice): DeviceDetailData {
+  const lower = device.name.toLowerCase();
+  if (lower.includes('điều hòa') || lower.includes('air con')) {
+    return DEVICE_DETAIL_AIRCON;
+  }
+  if (lower.includes('bình nóng') || lower.includes('nước nóng')) {
+    return {
+      id: device.id,
+      name: device.name,
+      meta: '2.500 W · PHÒNG TẮM CHÍNH',
+      avgW: '2.500',
+      costMonth: '168,0',
+      note: 'Bật bình trước khi tắm 15-20 phút rồi tắt sẽ giảm 25% lượng điện thất thoát so với việc cắm liên tục 24/7.',
+      stats: [
+        { label: 'Tổng điện tiêu thụ', value: `${device.kwh.toFixed(1)} kWh` },
+        { label: 'Tổng ước tính chi phí', value: `${Math.round(device.cost).toLocaleString('vi-VN')} đ` },
+        { label: 'Số lần bật', value: '14 lần' },
+        { label: 'Tổng thời gian chạy', value: '7h 15p' },
+      ],
+    };
+  }
+  if (lower.includes('bếp')) {
+    return {
+      id: device.id,
+      name: device.name,
+      meta: '2.000 W · NHÀ BẾP',
+      avgW: '1.650',
+      costMonth: '92,0',
+      note: 'Nấu ăn tập trung vào khung giờ thấp điểm hoặc bình thường sẽ giúp tối ưu hóa chi phí điện năng gia đình.',
+      stats: [
+        { label: 'Tổng điện tiêu thụ', value: `${device.kwh.toFixed(1)} kWh` },
+        { label: 'Tổng ước tính chi phí', value: `${Math.round(device.cost).toLocaleString('vi-VN')} đ` },
+        { label: 'Số lần bật', value: '18 lần' },
+        { label: 'Tổng thời gian chạy', value: '6h 30p' },
+      ],
+    };
+  }
+  if (lower.includes('tủ lạnh')) {
+    return {
+      id: device.id,
+      name: device.name,
+      meta: '120 W · NHÀ BẾP',
+      avgW: '85',
+      costMonth: '76,5',
+      note: 'Chu kỳ đóng mở bình thường, gioăng cao su kín khít. Không phát hiện rò rỉ nhiệt hay bất thường máy nén.',
+      stats: [
+        { label: 'Tổng điện tiêu thụ', value: `${device.kwh.toFixed(1)} kWh` },
+        { label: 'Tổng ước tính chi phí', value: `${Math.round(device.cost).toLocaleString('vi-VN')} đ` },
+        { label: 'Số lần bật', value: 'Hoạt động liên tục' },
+        { label: 'Tổng thời gian chạy', value: '168h 00p' },
+      ],
+    };
+  }
+  return {
+    id: device.id,
+    name: device.name,
+    meta: `${Math.round(device.kwh * 100)} W · TỔNG HỢP`,
+    avgW: `${Math.round(device.kwh * 100)}`,
+    costMonth: `${(device.cost / 1000).toFixed(1).replace('.', ',')}`,
+    note: 'Công suất tiêu thụ ổn định theo chu kỳ sinh hoạt gia đình.',
+    stats: [
+      { label: 'Tổng điện tiêu thụ', value: `${device.kwh.toFixed(1)} kWh` },
+      { label: 'Tổng ước tính chi phí', value: `${Math.round(device.cost).toLocaleString('vi-VN')} đ` },
+      { label: 'Tỷ trọng phụ tải', value: `${device.pct}%` },
+      { label: 'Trạng thái', value: 'Đang theo dõi' },
+    ],
+  };
+}
+
 export const DEVICE_WEEK_BARS: BarDatum[] = [
   ['T2', 5.1, 'Thứ Hai'],
   ['T3', 6.4, 'Thứ Ba'],

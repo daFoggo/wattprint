@@ -26,7 +26,7 @@ export function BreakdownTable({
         const color = DataRamp[index % DataRamp.length].bg;
         const displayValue =
           unitMode === 'cost'
-            ? `${device.cost.toLocaleString('en-US')} VND`
+            ? `${Math.round(device.cost).toLocaleString('vi-VN')} đ`
             : `${device.kwh.toFixed(1)} kWh`;
 
         return (

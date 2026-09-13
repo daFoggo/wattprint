@@ -3,12 +3,11 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
-import { BottomTabInset, DataRamp, MaxContentWidth, WattPrintTokens } from '@/constants/theme';
+import { BottomTabInset, MaxContentWidth, WattPrintTokens } from '@/constants/theme';
 import { BubbleBreakdown } from '@/features/energy/components/bubble-breakdown';
 import { EnergyAlertsBlock } from '@/features/energy/components/energy-alerts-block';
 import { EnergyTimeline } from '@/features/energy/components/energy-timeline';
 import { RangePillSelector } from '@/features/energy/components/range-pill-selector';
-import { DeviceQuickSheet } from '@/features/energy/components/device-quick-sheet';
 import {
   DASHBOARD_RANGES,
   DASHBOARD_RATE,
@@ -16,18 +15,18 @@ import {
   mockAlerts,
   mockTimeline,
 } from '@/features/energy/mock';
-import type { BubbleDevice, DashboardRange, UnitMode } from '@/features/energy/types';
+import type { DashboardRange, UnitMode } from '@/features/energy/types';
+import { useEnergyStore } from '@/features/energy/use-energy-store';
 
 import { HeroMetric } from './components/hero-metric';
 import { HomeHeader } from './components/home-header';
 
 export function HomeScreen() {
   const router = useRouter();
+  const { setActiveDeviceDetail } = useEnergyStore();
   const [range, setRange] = useState<DashboardRange>('day');
   const [unitMode, setUnitMode] = useState<UnitMode>('kwh');
   const [selectedBubbleIndex, setSelectedBubbleIndex] = useState<number>(0);
-  const [isQuickSheetOpen, setIsQuickSheetOpen] = useState<boolean>(false);
-  const [inspectedDevice, setInspectedDevice] = useState<BubbleDevice | null>(null);
 
   const heroData = DASHBOARD_RANGES[range];
   const cost = heroData.kwh * DASHBOARD_RATE;
@@ -35,8 +34,11 @@ export function HomeScreen() {
 
   const handleSelectBubble = (index: number) => {
     setSelectedBubbleIndex(index);
-    setInspectedDevice(devices[index] ?? null);
-    setIsQuickSheetOpen(true);
+    const selected = devices[index];
+    if (selected) {
+      setActiveDeviceDetail(selected);
+      router.push('/usage');
+    }
   };
 
   const toggleUnit = () => {
@@ -88,14 +90,6 @@ export function HomeScreen() {
           />
         </View>
       </ScrollView>
-
-      {/* Native @expo/ui BottomSheet for Rapid Device Inspection */}
-      <DeviceQuickSheet
-        device={inspectedDevice}
-        color={DataRamp[selectedBubbleIndex % DataRamp.length].bg}
-        isOpen={isQuickSheetOpen}
-        onClose={() => setIsQuickSheetOpen(false)}
-      />
     </SafeAreaView>
   );
 }

@@ -12,6 +12,7 @@ import {
 } from './mock';
 import type {
   BreakdownView,
+  BubbleDevice,
   ChatMessage,
   ChatThread,
   CustomerType,
@@ -42,6 +43,8 @@ interface EnergyStoreValue {
   setSelectedDeviceIndex: (index: number) => void;
   selectedUsageBar: number;
   setSelectedUsageBar: (index: number) => void;
+  activeDeviceDetail: BubbleDevice | null;
+  setActiveDeviceDetail: (device: BubbleDevice | null) => void;
   customerType: CustomerType;
   setCustomerType: (type: CustomerType) => void;
 
@@ -71,6 +74,7 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
   const [breakdownView, setBreakdownView] = useState<BreakdownView>('bubble');
   const [selectedDeviceIndex, setSelectedDeviceIndex] = useState<number>(0);
   const [selectedUsageBar, setSelectedUsageBar] = useState<number>(3);
+  const [activeDeviceDetail, setActiveDeviceDetail] = useState<BubbleDevice | null>(null);
   const [customerType, setCustomerType] = useState<CustomerType>('home');
   const [threads, setThreads] = useState<ChatThread[]>(MOCK_CHAT_THREADS);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
@@ -284,6 +288,8 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
       setSelectedDeviceIndex,
       selectedUsageBar,
       setSelectedUsageBar,
+      activeDeviceDetail,
+      setActiveDeviceDetail,
       customerType,
       setCustomerType,
       threads,
@@ -306,6 +312,7 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
       breakdownView,
       selectedDeviceIndex,
       selectedUsageBar,
+      activeDeviceDetail,
       customerType,
       threads,
       activeThreadId,

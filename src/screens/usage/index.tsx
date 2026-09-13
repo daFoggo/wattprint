@@ -1,6 +1,5 @@
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -27,6 +26,7 @@ import {
 } from '@/features/energy/mock';
 import type { BubbleDevice, BreakdownView, UsageTab } from '@/features/energy/types';
 import { useEnergyStore } from '@/features/energy/use-energy-store';
+import { DeviceDetailScreen } from '@/screens/device-detail/index';
 
 const TABS: { key: UsageTab; label: string }[] = [
   { key: 'day', label: 'NGÀY' },
@@ -43,7 +43,6 @@ const VIEWS: { key: BreakdownView; label: string }[] = [
 ];
 
 export function UsageScreen() {
-  const router = useRouter();
   const {
     unit,
     toggleUnit,
@@ -55,9 +54,20 @@ export function UsageScreen() {
     setSelectedDeviceIndex,
     selectedUsageBar,
     setSelectedUsageBar,
+    activeDeviceDetail,
+    setActiveDeviceDetail,
     customerType,
     setCustomerType,
   } = useEnergyStore();
+
+  if (activeDeviceDetail) {
+    return (
+      <DeviceDetailScreen
+        device={activeDeviceDetail}
+        onBack={() => setActiveDeviceDetail(null)}
+      />
+    );
+  }
 
   const isBill = usageTab === 'bill';
   const rangeKey = isBill ? 'month' : usageTab;
@@ -86,7 +96,7 @@ export function UsageScreen() {
       : `nhiều hơn ${MONTH_DELTA}%`;
 
   const handleDevicePress = (device: BubbleDevice) => {
-    router.push('/device-detail');
+    setActiveDeviceDetail(device);
   };
 
   return (
@@ -189,7 +199,12 @@ export function UsageScreen() {
                   <BubbleBreakdown
                     devices={devices}
                     selectedIndex={selectedDeviceIndex}
-                    onSelectIndex={setSelectedDeviceIndex}
+                    onSelectIndex={(idx) => {
+                      setSelectedDeviceIndex(idx);
+                      if (devices[idx]) {
+                        setActiveDeviceDetail(devices[idx]);
+                      }
+                    }}
                   />
                 </View>
               )}

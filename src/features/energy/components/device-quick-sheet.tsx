@@ -6,6 +6,8 @@ import { useRouter } from 'expo-router';
 import { DataRamp, Fonts, WattPrintTokens } from '@/constants/theme';
 import type { BubbleDevice } from '@/features/energy/types';
 
+import { useEnergyStore } from '@/features/energy/use-energy-store';
+
 interface DeviceQuickSheetProps {
   device: BubbleDevice | null;
   color?: string;
@@ -15,13 +17,15 @@ interface DeviceQuickSheetProps {
 
 export function DeviceQuickSheet({ device, color, isOpen, onClose }: DeviceQuickSheetProps) {
   const router = useRouter();
+  const { setActiveDeviceDetail } = useEnergyStore();
   const { width } = useWindowDimensions();
 
   if (!device) return null;
 
   const handleOpenFullDetail = () => {
     onClose();
-    router.push('/device-detail');
+    setActiveDeviceDetail(device);
+    router.push('/usage');
   };
 
   const dotColor = color || DataRamp[0].bg;
