@@ -1,8 +1,10 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 import { DataRamp, Fonts, WattPrintTokens } from '@/constants/theme';
 import type { BubbleDevice, UnitMode } from '@/features/energy/types';
+import { ApplianceIcon } from './appliance-icon';
 
 interface BreakdownTableProps {
   devices: BubbleDevice[];
@@ -33,14 +35,33 @@ export function BreakdownTable({
           <Pressable
             key={device.id}
             onPress={() => {
+              try {
+                Haptics.selectionAsync();
+              } catch {}
               onSelect(index);
               onDevicePress?.(device);
             }}
-            style={[
+            style={({ pressed }) => [
               styles.row,
               isSelected && styles.rowSelected,
+              pressed && styles.rowPressed,
             ]}>
-            <View style={[styles.colorChip, { backgroundColor: color }]} />
+            <View
+              style={[
+                styles.iconBadge,
+                {
+                  backgroundColor: isSelected
+                    ? WattPrintTokens.colors.primary
+                    : `${color}25`,
+                },
+              ]}>
+              <ApplianceIcon
+                name={device.name}
+                id={device.id}
+                size={16}
+                color={isSelected ? '#FFFFFF' : color}
+              />
+            </View>
             <Text style={styles.name}>{device.name}</Text>
             <Text style={styles.value}>{displayValue}</Text>
             <Text style={styles.pct}>{device.pct}%</Text>
@@ -69,10 +90,16 @@ const styles = StyleSheet.create({
   rowSelected: {
     backgroundColor: WattPrintTokens.colors.primaryContainer, // #EFF4E6 (once per depth inside white card)
   },
-  colorChip: {
-    width: 11,
-    height: 11,
-    borderRadius: WattPrintTokens.radii.xs, // 4px
+  rowPressed: {
+    opacity: 0.75,
+    transform: [{ scale: 0.985 }],
+  },
+  iconBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: WattPrintTokens.radii.sm, // 10px
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   name: {
     flex: 1,

@@ -47,6 +47,10 @@ interface EnergyStoreValue {
   setActiveDeviceDetail: (device: BubbleDevice | null) => void;
   customerType: CustomerType;
   setCustomerType: (type: CustomerType) => void;
+  chartBreakdown: 'tou' | 'tier';
+  setChartBreakdown: (mode: 'tou' | 'tier') => void;
+  isBillingOpen: boolean;
+  setIsBillingOpen: (open: boolean) => void;
 
   // Copilot Chat State
   threads: ChatThread[];
@@ -76,6 +80,8 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
   const [selectedUsageBar, setSelectedUsageBar] = useState<number>(3);
   const [activeDeviceDetail, setActiveDeviceDetail] = useState<BubbleDevice | null>(null);
   const [customerType, setCustomerType] = useState<CustomerType>('home');
+  const [chartBreakdown, setChartBreakdown] = useState<'tou' | 'tier'>('tier');
+  const [isBillingOpen, setIsBillingOpen] = useState<boolean>(false);
   const [threads, setThreads] = useState<ChatThread[]>(MOCK_CHAT_THREADS);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(INITIAL_CHAT);
@@ -292,6 +298,10 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
       setActiveDeviceDetail,
       customerType,
       setCustomerType,
+      chartBreakdown,
+      setChartBreakdown,
+      isBillingOpen,
+      setIsBillingOpen,
       threads,
       activeThreadId,
       setActiveThreadId,
@@ -314,6 +324,8 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
       selectedUsageBar,
       activeDeviceDetail,
       customerType,
+      chartBreakdown,
+      isBillingOpen,
       threads,
       activeThreadId,
       createThread,

@@ -6,7 +6,6 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { Host } from '@expo/ui';
 import AppTabs from '@/components/common/app-tabs';
 import { EnergyStoreProvider } from '@/features/energy/use-energy-store';
 import { QueryProvider } from '@/providers/query-provider';
@@ -37,16 +36,14 @@ export default function TabLayout() {
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <Host style={{ flex: 1 }}>
-          <ThemeProvider value={DefaultTheme}>
-            <StatusBar style="dark" />
-            <QueryProvider>
-              <EnergyStoreProvider>
-                <AppTabs />
-              </EnergyStoreProvider>
-            </QueryProvider>
-          </ThemeProvider>
-        </Host>
+        <ThemeProvider value={DefaultTheme}>
+          <StatusBar style="dark" />
+          <QueryProvider>
+            <EnergyStoreProvider>
+              <AppTabs />
+            </EnergyStoreProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </GestureHandlerRootView>
     </SafeAreaProvider>
   );

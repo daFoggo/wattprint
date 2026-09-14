@@ -16,7 +16,8 @@ import type {
   Suggestion,
   TierInfo,
   TimelineEvent,
-  TOUInfo,
+  UsageChartItem,
+  UsageChartSegment,
   UsagePoint,
 } from './types';
 
@@ -146,24 +147,35 @@ export const mockTimeline: TimelineEvent[] = [
   },
 ];
 
-// --- EVN 6-tier household tariff and 3-window TOU ---
+// --- Official EVN 6-tier household tariff ---
 export const TIERS: TierInfo[] = [
-  { name: 'Bậc 1', sub: '0 đến 50 kWh, 1.893 đ', price: 1893, cap: 50, color: '#164437' },
-  { name: 'Bậc 2', sub: '51 đến 100 kWh, 1.956 đ', price: 1956, cap: 100, color: '#2C5F45' },
-  { name: 'Bậc 3', sub: '101 đến 200 kWh, 2.271 đ', price: 2271, cap: 200, color: '#2F7A0C' },
-  { name: 'Bậc 4', sub: '201 đến 300 kWh, 2.860 đ', price: 2860, cap: 300, color: '#5AAE14' },
-  { name: 'Bậc 5', sub: '301 đến 400 kWh, 3.197 đ', price: 3197, cap: 400, color: '#8CD41C' },
-  { name: 'Bậc 6', sub: 'trên 400 kWh, 3.302 đ', price: 3302, cap: Infinity, color: '#B5E930' },
+  { name: 'Bậc 1', sub: '0 đến 50 kWh, 1.984 đ', price: 1984, cap: 50, color: '#DEEEBD', symbol: '■', pattern: 'solid' },
+  { name: 'Bậc 2', sub: '51 đến 100 kWh, 2.050 đ', price: 2050, cap: 100, color: '#B5E930', symbol: '■', pattern: 'solid' },
+  { name: 'Bậc 3', sub: '101 đến 200 kWh, 2.380 đ', price: 2380, cap: 200, color: '#389E1E', symbol: '■', pattern: 'solid' },
+  { name: 'Bậc 4', sub: '201 đến 300 kWh, 2.998 đ', price: 2998, cap: 300, color: '#164437', symbol: '■', pattern: 'solid' },
+  { name: 'Bậc 5', sub: '301 đến 400 kWh, 3.350 đ', price: 3350, cap: 400, color: '#E5A93C', symbol: '■', pattern: 'solid' },
+  { name: 'Bậc 6', sub: 'trên 400 kWh, 3.460 đ', price: 3460, cap: Infinity, color: '#DC2626', symbol: '■', pattern: 'solid' },
 ];
 
-export const TOU: TOUInfo[] = [
-  { name: 'Thấp điểm', sub: '22:00 đến 04:00, hàng ngày', price: 1738, share: 0.30, color: '#164437' },
-  { name: 'Bình thường', sub: '04:00 - 09:30 & 11:30 - 17:00', price: 2870, share: 0.45, color: '#5AAE14' },
-  { name: 'Cao điểm', sub: '09:30 - 11:30 & 17:00 - 20:00', price: 4924, share: 0.25, color: '#B5E930' },
+export const TIER_PATTERNS: ('solid')[] = [
+  'solid',
+  'solid',
+  'solid',
+  'solid',
+  'solid',
+  'solid',
 ];
 
 export const DAILY = [19, 21, 18, 22, 20, 17, 23, 19, 21, 20, 18, 22, 19, 25];
 export const LAST_DAILY = [18, 20, 17, 21, 19, 16, 22, 18, 20, 19, 17, 21, 18, 15];
+
+export const LAST_MONTH_30_DAYS = [
+  18, 20, 17, 21, 19, 16, 22, 18, 20, 19, 17, 21, 18, 15,
+  19, 21, 20, 18, 22, 19, 21, 17, 20, 19, 22, 18, 21, 19, 20, 18,
+];
+export const THIS_MONTH_DAYS = [
+  19, 21, 18, 22, 20, 17, 23, 19, 21, 20, 18, 22, 19, 25,
+];
 
 export function tierSplit(daily: number[]): BillDay[] {
   let cum = 0;
@@ -202,13 +214,204 @@ export const HOME_COST = TIERS.reduce((s, t, i) => s + TIER_USED[i] * t.price, 0
 export const MONTH_COST = HOME_COST * 1.08;
 export const RATE = MONTH_COST / MONTH_KWH;
 export const NEXT_I = TIERS.findIndex((t) => t.cap > MONTH_KWH);
-export const CURRENT_TIER = TIERS[NEXT_I];
+export const CURRENT_TIER = TIERS[NEXT_I] ?? TIERS[2];
 export const NEXT_TIER = TIERS[NEXT_I + 1] ?? TIERS[TIERS.length - 1];
 export const HEADROOM = CURRENT_TIER.cap - MONTH_KWH;
 export const CROSS_DAY = DAYS_IN + Math.ceil(HEADROOM / PACE);
 export const STEP_PCT = Math.round((NEXT_TIER.price / CURRENT_TIER.price - 1) * 100);
 export const LAST_TOTAL = LAST_DAILY.reduce((a, b) => a + b, 0);
 export const MONTH_DELTA = Math.round((MONTH_KWH / LAST_TOTAL - 1) * 100);
+
+export const DAY_CHART_ITEMS: UsageChartItem[] = [
+  {
+    label: '00',
+    tooltip: '00:00 - 03:00',
+    kwh: 1.1,
+    cost: Math.round(1.1 * 2380),
+    tierSegments: [{ id: 't3', label: 'Bậc 3', kwh: 1.1, cost: Math.round(1.1 * 2380), pattern: 'solid', color: '#5AAE14' }],
+  },
+  {
+    label: '03',
+    tooltip: '03:00 - 06:00',
+    kwh: 0.9,
+    cost: Math.round(0.9 * 2380),
+    tierSegments: [{ id: 't3', label: 'Bậc 3', kwh: 0.9, cost: Math.round(0.9 * 2380), pattern: 'solid', color: '#5AAE14' }],
+  },
+  {
+    label: '06',
+    tooltip: '06:00 - 09:00',
+    kwh: 1.4,
+    cost: Math.round(1.4 * 2380),
+    tierSegments: [{ id: 't3', label: 'Bậc 3', kwh: 1.4, cost: Math.round(1.4 * 2380), pattern: 'solid', color: '#5AAE14' }],
+  },
+  {
+    label: '09',
+    tooltip: '09:00 - 12:00',
+    kwh: 1.8,
+    cost: Math.round(1.8 * 2380),
+    tierSegments: [{ id: 't3', label: 'Bậc 3', kwh: 1.8, cost: Math.round(1.8 * 2380), pattern: 'solid', color: '#5AAE14' }],
+  },
+  {
+    label: '12',
+    tooltip: '12:00 - 15:00',
+    kwh: 2.2,
+    cost: Math.round(2.2 * 2380),
+    tierSegments: [{ id: 't3', label: 'Bậc 3', kwh: 2.2, cost: Math.round(2.2 * 2380), pattern: 'solid', color: '#5AAE14' }],
+  },
+  {
+    label: '15',
+    tooltip: '15:00 - 18:00',
+    kwh: 1.9,
+    cost: Math.round(1.9 * 2380),
+    tierSegments: [{ id: 't3', label: 'Bậc 3', kwh: 1.9, cost: Math.round(1.9 * 2380), pattern: 'solid', color: '#5AAE14' }],
+  },
+  {
+    label: '18',
+    tooltip: '18:00 - 21:00',
+    kwh: 2.4,
+    cost: Math.round(2.4 * 2380),
+    tierSegments: [{ id: 't3', label: 'Bậc 3', kwh: 2.4, cost: Math.round(2.4 * 2380), pattern: 'solid', color: '#5AAE14' }],
+  },
+  {
+    label: '21',
+    tooltip: '21:00 - 00:00',
+    kwh: 0.7,
+    cost: Math.round(0.7 * 2380),
+    tierSegments: [{ id: 't3', label: 'Bậc 3', kwh: 0.7, cost: Math.round(0.7 * 2380), pattern: 'solid', color: '#5AAE14' }],
+  },
+];
+
+const WEEK_DAYS = [
+  { label: 'T2', full: 'Thứ Hai', kwh: 10.2 },
+  { label: 'T3', full: 'Thứ Ba', kwh: 12.4 },
+  { label: 'T4', full: 'Thứ Tư', kwh: 9.8 },
+  { label: 'T5', full: 'Thứ Năm', kwh: 13.1 },
+  { label: 'T6', full: 'Thứ Sáu', kwh: 11.6 },
+  { label: 'T7', full: 'Thứ Bảy', kwh: 12.9 },
+  { label: 'CN', full: 'Chủ Nhật', kwh: 11.6 },
+];
+
+export const WEEK_CHART_ITEMS: UsageChartItem[] = WEEK_DAYS.map((d, i) => {
+  const isSpikeWeekend = i >= 5;
+  const normalKwh = isSpikeWeekend ? Math.round((d.kwh - 2.2) * 10) / 10 : d.kwh;
+  const warningKwh = isSpikeWeekend ? 2.2 : 0;
+
+  const normalCost = Math.round(normalKwh * 2380);
+  const warningCost = Math.round(warningKwh * 3350);
+
+  const tierSegments: UsageChartSegment[] = [
+    {
+      id: 't3',
+      label: 'Bậc 3 (Tiêu chuẩn)',
+      kwh: normalKwh,
+      cost: normalCost,
+      pattern: 'solid',
+      color: '#5AAE14',
+    },
+  ];
+
+  if (isSpikeWeekend) {
+    tierSegments.push({
+      id: 't5',
+      label: 'Bậc 5 (Vượt ngưỡng)',
+      kwh: warningKwh,
+      cost: warningCost,
+      pattern: 'solid',
+      color: '#E5A93C',
+    });
+  }
+
+  return {
+    label: d.label,
+    tooltip: `${d.full}`,
+    kwh: d.kwh,
+    cost: normalCost + warningCost,
+    tierSegments,
+  };
+});
+
+export const MONTH_CHART_ITEMS: UsageChartItem[] = BILL_DAYS.map((d) => {
+  let dayCost = 0;
+  const tierSegments: UsageChartSegment[] = d.segs.map((sg) => {
+    const tier = TIERS[sg.ti] ?? TIERS[0];
+    const pat = TIER_PATTERNS[sg.ti] ?? 'solid';
+    const c = Math.round(sg.kwh * tier.price);
+    dayCost += c;
+    return {
+      id: `t${sg.ti + 1}`,
+      label: tier.name,
+      kwh: Math.round(sg.kwh * 10) / 10,
+      cost: c,
+      pattern: 'solid',
+      color: tier.color,
+    };
+  });
+
+  return {
+    label: `${d.day}`,
+    tooltip: `Ngày ${d.day}/09`,
+    kwh: d.kwh,
+    cost: dayCost,
+    tierSegments,
+  };
+});
+
+const MONTH_NAMES = [
+  'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+  'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
+];
+const YEAR_KWH = [178, 165, 189, 214, 258, 291, 304, 296, 284, 231, 0, 0];
+
+export const YEAR_CHART_ITEMS: UsageChartItem[] = YEAR_KWH.map((kwh, idx) => {
+  const t1 = Math.min(kwh, 50);
+  const t2 = Math.min(Math.max(0, kwh - 50), 50);
+  const t3 = Math.min(Math.max(0, kwh - 100), 100);
+  const t4 = Math.min(Math.max(0, kwh - 200), 100);
+  const t5 = Math.min(Math.max(0, kwh - 300), 100);
+  const t6 = Math.max(0, kwh - 400);
+
+  const tierSegments: UsageChartSegment[] = [];
+  let totalCost = 0;
+
+  if (t1 > 0) {
+    const c = Math.round(t1 * 1984);
+    totalCost += c;
+    tierSegments.push({ id: 't1', label: 'Bậc 1', kwh: t1, cost: c, pattern: 'solid' });
+  }
+  if (t2 > 0) {
+    const c = Math.round(t2 * 2050);
+    totalCost += c;
+    tierSegments.push({ id: 't2', label: 'Bậc 2', kwh: t2, cost: c, pattern: 'solid' });
+  }
+  if (t3 > 0) {
+    const c = Math.round(t3 * 2380);
+    totalCost += c;
+    tierSegments.push({ id: 't3', label: 'Bậc 3', kwh: t3, cost: c, pattern: 'solid' });
+  }
+  if (t4 > 0) {
+    const c = Math.round(t4 * 2998);
+    totalCost += c;
+    tierSegments.push({ id: 't4', label: 'Bậc 4', kwh: t4, cost: c, pattern: 'solid' });
+  }
+  if (t5 > 0) {
+    const c = Math.round(t5 * 3350);
+    totalCost += c;
+    tierSegments.push({ id: 't5', label: 'Bậc 5', kwh: t5, cost: c, pattern: 'solid' });
+  }
+  if (t6 > 0) {
+    const c = Math.round(t6 * 3460);
+    totalCost += c;
+    tierSegments.push({ id: 't6', label: 'Bậc 6', kwh: t6, cost: c, pattern: 'solid' });
+  }
+
+  return {
+    label: `T${idx + 1}`,
+    tooltip: `${MONTH_NAMES[idx]}`,
+    kwh,
+    cost: totalCost,
+    tierSegments,
+  };
+});
 
 export const USAGE_RANGES: Record<string, RangeData> = {
   day: {
@@ -226,7 +429,15 @@ export const USAGE_RANGES: Record<string, RangeData> = {
       ['18', 2.4, '18:00'],
       ['21', 0.7, '21:00'],
     ],
+    chartItems: DAY_CHART_ITEMS,
     shares: [52, 24, 9, 8, 7],
+    comparisonCurrent: [0.4, 0.3, 0.2, 0.4, 0.8, 1.2, 1.5, 1.4, 1.2, 1.6, 1.8, 1.6],
+    comparisonPrevious: [0.5, 0.4, 0.3, 0.5, 0.9, 1.4, 1.8, 1.6, 1.5, 1.7, 1.9, 1.8],
+    currentLabel: 'Hôm nay',
+    previousLabel: 'Hôm qua',
+    axisStart: '00:00',
+    axisEnd: '24:00',
+    datePrefix: 'Mốc',
   },
   week: {
     kwh: 81.6,
@@ -242,7 +453,15 @@ export const USAGE_RANGES: Record<string, RangeData> = {
       ['T7', 12.9, 'Thứ Bảy'],
       ['CN', 11.6, 'Chủ Nhật'],
     ],
+    chartItems: WEEK_CHART_ITEMS,
     shares: [48, 22, 12, 10, 8],
+    comparisonCurrent: [10.2, 12.4, 9.8, 13.1, 11.6, 12.9, 11.6],
+    comparisonPrevious: [11.5, 13.2, 10.8, 12.8, 12.4, 13.5, 12.2],
+    currentLabel: 'Tuần này',
+    previousLabel: 'Tuần trước',
+    axisStart: 'T2',
+    axisEnd: 'CN',
+    datePrefix: 'Ngày',
   },
   month: {
     kwh: MONTH_KWH,
@@ -259,7 +478,15 @@ export const USAGE_RANGES: Record<string, RangeData> = {
       ['25', 66, '25 đến 28 tháng 9'],
       ['29', 51, '29 đến 30 tháng 9'],
     ],
+    chartItems: MONTH_CHART_ITEMS,
     shares: [45, 23, 13, 11, 8],
+    comparisonCurrent: THIS_MONTH_DAYS,
+    comparisonPrevious: LAST_MONTH_30_DAYS,
+    currentLabel: 'Tháng này',
+    previousLabel: 'Tháng trước',
+    axisStart: '01/09',
+    axisEnd: '30/09',
+    datePrefix: 'Ngày',
   },
   year: {
     kwh: 2410,
@@ -280,7 +507,15 @@ export const USAGE_RANGES: Record<string, RangeData> = {
       ['T11', 0, 'Tháng 11'],
       ['T12', 0, 'Tháng 12'],
     ],
+    chartItems: YEAR_CHART_ITEMS,
     shares: [44, 24, 13, 11, 8],
+    comparisonCurrent: [178, 165, 189, 214, 258, 291, 304, 296, 284],
+    comparisonPrevious: [190, 175, 195, 220, 265, 295, 310, 300, 290, 270, 240, 220],
+    currentLabel: 'Năm nay',
+    previousLabel: 'Năm ngoái',
+    axisStart: 'T1',
+    axisEnd: 'T12',
+    datePrefix: 'Tháng',
   },
 };
 

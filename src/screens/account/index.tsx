@@ -2,12 +2,16 @@ import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Host, Switch } from '@expo/ui';
+import { useRouter } from 'expo-router';
 
 import { Fonts, WattPrintTokens } from '@/constants/theme';
 import { Card } from '@/components/common/card';
 import { ACCOUNT_GROUPS } from '@/features/energy/mock';
+import { useEnergyStore } from '@/features/energy/use-energy-store';
 
 export function AccountScreen() {
+  const router = useRouter();
+  const { setIsBillingOpen } = useEnergyStore();
   const [tierWarnings, setTierWarnings] = useState(true);
   const [phantomAlerts, setPhantomAlerts] = useState(true);
 
@@ -32,14 +36,28 @@ export function AccountScreen() {
 
         {/* Paired Status Cards */}
         <View style={styles.pairedGrid}>
-          <Card style={styles.statusCard}>
-            <Text style={styles.statusEyebrow}>BIỂU PHÍ</Text>
-            <Text style={styles.statusValue}>Sinh hoạt</Text>
-          </Card>
-          <Card style={styles.statusCard}>
-            <Text style={styles.statusEyebrow}>CẢM BIẾN</Text>
-            <Text style={styles.statusValue}>Đã kết nối</Text>
-          </Card>
+          <Pressable
+            onPress={() => {
+              setIsBillingOpen(true);
+              router.push('/usage');
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Xem chi tiết biểu phí và hóa đơn"
+            style={styles.statusCardPressable}>
+            <Card style={styles.statusCard}>
+              <View style={styles.statusHeaderRow}>
+                <Text style={styles.statusEyebrow}>BIỂU PHÍ</Text>
+                <Text style={styles.statusArrow}>›</Text>
+              </View>
+              <Text style={styles.statusValue}>Sinh hoạt</Text>
+            </Card>
+          </Pressable>
+          <View style={{ flex: 1 }}>
+            <Card style={styles.statusCard}>
+              <Text style={styles.statusEyebrow}>CẢM BIẾN</Text>
+              <Text style={styles.statusValue}>Đã kết nối</Text>
+            </Card>
+          </View>
         </View>
 
         {/* Grouped Settings Cards */}
@@ -145,6 +163,9 @@ const styles = StyleSheet.create({
     gap: 12,
     width: '100%',
   },
+  statusCardPressable: {
+    flex: 1,
+  },
   statusCard: {
     flex: 1,
     backgroundColor: '#FFFFFF',
@@ -152,6 +173,17 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 18,
     gap: 5,
+  },
+  statusHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  statusArrow: {
+    fontFamily: Fonts.sansSemiBold,
+    fontSize: 16,
+    color: WattPrintTokens.colors.accentDeep,
+    lineHeight: 16,
   },
   statusEyebrow: {
     fontFamily: Fonts.monoMedium,

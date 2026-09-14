@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { Fonts, WattPrintTokens } from '@/constants/theme';
 import {
@@ -9,161 +9,100 @@ import {
   DAYS_LEFT,
   HEADROOM,
   MONTH_COST,
-  MONTH_KWH,
   NEXT_TIER,
   PACE,
   STEP_PCT,
   TIER_USED,
   TIERS,
-  TOU,
 } from '@/features/energy/mock';
 import type { CustomerType } from '@/features/energy/types';
 
 interface BillingTariffViewProps {
-  customerType: CustomerType;
-  onCustomerChange: (type: CustomerType) => void;
+  customerType?: CustomerType;
+  onCustomerChange?: (type: CustomerType) => void;
+  hideChart?: boolean;
 }
 
 export function BillingTariffView({
-  customerType,
-  onCustomerChange,
+  hideChart = false,
 }: BillingTariffViewProps) {
-  const isHome = customerType === 'home';
-
   const maxDayKwh = Math.max(...BILL_DAYS.map((d) => d.kwh)) || 1;
   const chartHeight = 110;
 
-  const bizCost = Math.round(
-    TOU.reduce((sum, t) => sum + MONTH_KWH * t.share * t.price, 0) * 1.08
-  );
-  const totalCostDisplay = isHome
-    ? `${Math.round(MONTH_COST).toLocaleString('en-US')}`
-    : `${bizCost.toLocaleString('en-US')}`;
+  const totalCostDisplay = `${Math.round(MONTH_COST).toLocaleString('vi-VN')}`;
 
-  const warnTag = isHome ? 'DỰ BÁO BẬC ĐIỆN' : 'CẢNH BÁO GIỜ CAO ĐIỂM';
-  const warnText = isHome
-    ? `Bạn đang ở ${CURRENT_TIER.name.toLowerCase()} với mức dự phòng ${Math.round(
-        HEADROOM
-      )} kWh. ${NEXT_TIER.name} đắt hơn ${STEP_PCT}%, và với mức tiêu thụ hiện tại ${PACE.toFixed(
-        1
-      )} kWh/ngày, bạn sẽ chạm bậc này vào ngày ${CROSS_DAY}/9.`
-    : 'Điện giờ cao điểm đắt gấp 2,8 lần giờ thấp điểm. Chuyển chu trình giặt sang sau 22:00 sẽ tiết kiệm khoảng 340.000 đ mỗi tháng.';
+  const warnTag = 'DỰ BÁO BẬC ĐIỆN';
+  const warnText = `Bạn đang ở ${CURRENT_TIER.name.toLowerCase()} với mức dự phòng ${Math.round(
+    HEADROOM
+  )} kWh. ${NEXT_TIER.name} đắt hơn ${STEP_PCT}%, và với mức tiêu thụ hiện tại ${PACE.toFixed(
+    1
+  )} kWh/ngày, bạn sẽ chạm bậc này vào ngày ${CROSS_DAY}/9.`;
 
-  const tableTag = isHome ? 'BIỂU PHÍ SINH HOẠT' : 'BIỂU PHÍ THEO KHUNG GIỜ (TOU)';
-  const tableTitle = isHome
-    ? '6 bậc thang lũy tiến áp dụng trên tổng điện tiêu thụ tích lũy.'
-    : '3 khung giờ có mức giá riêng biệt trong ngày.';
+  const tableTag = 'BIỂU PHÍ SINH HOẠT (EVN)';
+  const tableTitle = '6 bậc thang lũy tiến áp dụng trên tổng điện tiêu thụ tích lũy.';
 
-  const rows = isHome
-    ? TIERS.map((t, i) => ({
-        name: t.name,
-        sub: t.sub,
-        used: `${Math.round(TIER_USED[i])}`,
-        cost: `${Math.round(TIER_USED[i] * t.price).toLocaleString('vi-VN')}`,
-        color: t.color,
-      }))
-    : TOU.map((t) => ({
-        name: t.name,
-        sub: t.sub,
-        used: `${Math.round(MONTH_KWH * t.share)}`,
-        cost: `${Math.round(MONTH_KWH * t.share * t.price).toLocaleString('vi-VN')}`,
-        color: t.color,
-      }));
+  const rows = TIERS.map((t, i) => ({
+    name: t.name,
+    sub: t.sub,
+    used: `${Math.round(TIER_USED[i])}`,
+    cost: `${Math.round(TIER_USED[i] * t.price).toLocaleString('vi-VN')}`,
+    color: t.color,
+    symbol: t.symbol ?? '■',
+    pattern: t.pattern ?? 'solid',
+  }));
 
   return (
     <View style={styles.container}>
-      {/* 1. BILL TO DATE CARD */}
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.eyebrow}>HÓA ĐƠN TẠM TÍNH</Text>
-
-          {/* Segmented pill switch: Household / Business */}
-          <View style={styles.pillTrack}>
-            <Pressable
-              onPress={() => onCustomerChange('home')}
-              style={[
-                styles.pillItem,
-                isHome && styles.pillItemActive,
-              ]}>
-              <Text
-                style={[
-                  styles.pillText,
-                  isHome && styles.pillTextActive,
-                ]}>
-                Sinh hoạt
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={() => onCustomerChange('biz')}
-              style={[
-                styles.pillItem,
-                !isHome && styles.pillItemActive,
-              ]}>
-              <Text
-                style={[
-                  styles.pillText,
-                  !isHome && styles.pillTextActive,
-                ]}>
-                Kinh doanh
-              </Text>
-            </Pressable>
+      {/* 1. BILL TO DATE CARD (Rendered if not hidden) */}
+      {!hideChart && (
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.eyebrow}>HÓA ĐƠN TẠM TÍNH</Text>
+            <View style={styles.tierStatusPill}>
+              <Text style={styles.tierStatusText}>BẬC 3 / 6</Text>
+            </View>
           </View>
-        </View>
 
-        <Text style={styles.sentence}>
-          {isHome
-            ? `Hóa đơn của bạn đã chạm ${CURRENT_TIER.name.toLowerCase()} và còn ${DAYS_LEFT} ngày trong chu kỳ.`
-            : 'Một phần tư lượng điện tiêu thụ của bạn rơi vào khung giờ cao điểm.'}
-        </Text>
+          <Text style={styles.sentence}>
+            Hóa đơn của bạn đã chạm {CURRENT_TIER.name.toLowerCase()} và còn {DAYS_LEFT} ngày trong chu kỳ.
+          </Text>
 
-        <View style={styles.totalRow}>
-          <Text style={styles.totalValue}>{totalCostDisplay}</Text>
-          <Text style={styles.totalUnit}>VND</Text>
-        </View>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalValue}>{totalCostDisplay}</Text>
+            <Text style={styles.totalUnit}>VND</Text>
+          </View>
 
-        {/* Stacked Daily Columns */}
-        <View style={[styles.chartBox, { height: chartHeight + 20 }]}>
-          {BILL_DAYS.map((d) => {
-            const h = Math.round((d.kwh / maxDayKwh) * chartHeight);
-            return (
-              <View key={d.day} style={styles.dayCol}>
-                <View style={[styles.dayStack, { height: h }]}>
-                  {isHome
-                    ? d.segs.map((sg: { ti: number; kwh: number }, idx: number) => (
-                        <View
-                          key={idx}
-                          style={{
-                            height: Math.max(2, Math.round((sg.kwh / d.kwh) * h)),
-                            backgroundColor: TIERS[sg.ti]?.color ?? '#164437',
-                            width: '100%',
-                          }}
-                        />
-                      ))
-                    : TOU.map((t, idx) => (
-                        <View
-                          key={idx}
-                          style={{
-                            height: Math.max(2, Math.round(t.share * h)),
-                            backgroundColor: t.color,
-                            width: '100%',
-                          }}
-                        />
-                      ))}
+          {/* Stacked Daily Columns */}
+          <View style={[styles.chartBox, { height: chartHeight + 20 }]}>
+            {BILL_DAYS.map((d) => {
+              const h = Math.round((d.kwh / maxDayKwh) * chartHeight);
+              return (
+                <View key={d.day} style={styles.dayCol}>
+                  <View style={[styles.dayStack, { height: h }]}>
+                    {d.segs.map((sg: { ti: number; kwh: number }, idx: number) => (
+                      <View
+                        key={idx}
+                        style={{
+                          height: Math.max(2, Math.round((sg.kwh / d.kwh) * h)),
+                          backgroundColor: TIERS[sg.ti]?.color ?? '#164437',
+                          width: '100%',
+                        }}
+                      />
+                    ))}
+                  </View>
+                  <Text style={styles.dayLabel}>
+                    {d.day % 4 === 1 ? String(d.day) : ''}
+                  </Text>
                 </View>
-                <Text style={styles.dayLabel}>
-                  {d.day % 4 === 1 ? String(d.day) : ''}
-                </Text>
-              </View>
-            );
-          })}
-        </View>
+              );
+            })}
+          </View>
 
-        <Text style={styles.chartFootnote}>
-          {isHome
-            ? 'Mỗi cột là một ngày, hiển thị theo bậc giá điện tương ứng. Màu càng sáng thì giá càng cao.'
-            : 'Mỗi cột là một ngày, chia theo ba khung giờ sử dụng.'}
-        </Text>
-      </View>
+          <Text style={styles.chartFootnote}>
+            Mỗi cột là một ngày, hiển thị theo 6 bậc giá điện lũy tiến tương ứng.
+          </Text>
+        </View>
+      )}
 
       {/* 2. THE WEIGHT BLOCK: TIER FORECAST */}
       <View style={styles.weightBlock}>
@@ -172,31 +111,18 @@ export function BillingTariffView({
 
         {/* Progress bar across tiers */}
         <View style={styles.progressTrack}>
-          {isHome
-            ? TIERS.map((t, i) => (
-                <View
-                  key={t.name}
-                  style={[
-                    styles.progressSeg,
-                    {
-                      flex: Math.max(TIER_USED[i], 6),
-                      backgroundColor: TIER_USED[i] > 0 ? t.color : '#E7EBE1',
-                    },
-                  ]}
-                />
-              ))
-            : TOU.map((t) => (
-                <View
-                  key={t.name}
-                  style={[
-                    styles.progressSeg,
-                    {
-                      flex: t.share * 100,
-                      backgroundColor: t.color,
-                    },
-                  ]}
-                />
-              ))}
+          {TIERS.map((t, i) => (
+            <View
+              key={t.name}
+              style={[
+                styles.progressSeg,
+                {
+                  flex: Math.max(TIER_USED[i], 6),
+                  backgroundColor: TIER_USED[i] > 0 ? t.color : '#E7EBE1',
+                },
+              ]}
+            />
+          ))}
         </View>
       </View>
 
@@ -208,7 +134,7 @@ export function BillingTariffView({
         {/* Table Header */}
         <View style={styles.tableHeader}>
           <View style={{ width: 12 }} />
-          <Text style={[styles.colHeader, { flex: 1 }]}>BẬC / KHUNG GIỜ</Text>
+          <Text style={[styles.colHeader, { flex: 1 }]}>BẬC THANG EVN</Text>
           <Text style={[styles.colHeader, { width: 64, textAlign: 'right' }]}>ĐÃ DÙNG</Text>
           <Text style={[styles.colHeader, { width: 90, textAlign: 'right' }]}>THÀNH TIỀN</Text>
         </View>
@@ -217,7 +143,34 @@ export function BillingTariffView({
         <View style={styles.rowsList}>
           {rows.map((row, idx) => (
             <View key={idx} style={styles.tableRow}>
-              <View style={[styles.colorChip, { backgroundColor: row.color }]} />
+              <View
+                style={[
+                  styles.symbolBadge,
+                  row.pattern === 'cross'
+                    ? styles.symbolBadgeCross
+                    : row.pattern === 'hatch'
+                    ? styles.symbolBadgeHatch
+                    : row.pattern === 'grid'
+                    ? styles.symbolBadgeGrid
+                    : row.pattern === 'stripe-h'
+                    ? styles.symbolBadgeStripe
+                    : row.pattern === 'solid'
+                    ? styles.symbolBadgeSolid
+                    : styles.symbolBadgeMuted,
+                ]}>
+                <Text
+                  style={[
+                    styles.symbolBadgeText,
+                    row.pattern === 'cross' && styles.symbolBadgeTextCross,
+                    row.pattern === 'hatch' && styles.symbolBadgeTextHatch,
+                    row.pattern === 'grid' && styles.symbolBadgeTextGrid,
+                    row.pattern === 'solid' && styles.symbolBadgeTextSolid,
+                    row.pattern === 'stripe-h' && styles.symbolBadgeTextStripe,
+                    row.pattern === 'muted' && styles.symbolBadgeTextMuted,
+                  ]}>
+                  {row.symbol}
+                </Text>
+              </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.rowName}>{row.name}</Text>
                 <Text style={styles.rowSub}>{row.sub}</Text>
@@ -285,6 +238,17 @@ const styles = StyleSheet.create({
   },
   pillTextActive: {
     color: WattPrintTokens.colors.tertiary, // #B5E930
+  },
+  tierStatusPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: WattPrintTokens.radii.pill,
+    backgroundColor: WattPrintTokens.colors.primaryContainer,
+  },
+  tierStatusText: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 11,
+    color: WattPrintTokens.colors.primary,
   },
   sentence: {
     fontFamily: Fonts.sansSemiBold,
@@ -390,10 +354,55 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingVertical: 10,
   },
-  colorChip: {
-    width: 12,
-    height: 12,
-    borderRadius: WattPrintTokens.radii.xs, // 4px
+  symbolBadge: {
+    width: 22,
+    height: 22,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  symbolBadgeCross: {
+    backgroundColor: '#164437',
+  },
+  symbolBadgeHatch: {
+    backgroundColor: '#164437',
+  },
+  symbolBadgeGrid: {
+    backgroundColor: '#A8DC7C',
+  },
+  symbolBadgeStripe: {
+    backgroundColor: '#DCE7CF',
+  },
+  symbolBadgeSolid: {
+    backgroundColor: '#5AAE14',
+  },
+  symbolBadgeMuted: {
+    backgroundColor: '#EFF4E6',
+    borderWidth: 1,
+    borderColor: '#B8C9C1',
+  },
+  symbolBadgeText: {
+    fontSize: 13,
+    fontFamily: Fonts.monoMedium,
+    color: WattPrintTokens.colors.primary,
+  },
+  symbolBadgeTextCross: {
+    color: '#FF5C5C',
+  },
+  symbolBadgeTextHatch: {
+    color: '#E5A93C',
+  },
+  symbolBadgeTextGrid: {
+    color: '#164437',
+  },
+  symbolBadgeTextStripe: {
+    color: '#2F7A0C',
+  },
+  symbolBadgeTextSolid: {
+    color: '#FFFFFF',
+  },
+  symbolBadgeTextMuted: {
+    color: '#4A6B60',
   },
   rowName: {
     fontFamily: Fonts.sansMedium,

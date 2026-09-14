@@ -70,13 +70,39 @@ export type CustomerType = 'home' | 'biz';
 
 export type BarDatum = [label: string, value: number, tooltip: string];
 
+export interface UsageChartSegment {
+  id: string;
+  label: string;
+  kwh: number;
+  cost: number;
+  pattern: 'solid' | 'hatch' | 'muted' | 'stripe-h' | 'grid' | 'cross';
+  color?: string;
+}
+
+export interface UsageChartItem {
+  label: string;
+  tooltip: string;
+  kwh: number;
+  cost: number;
+  touSegments?: UsageChartSegment[];
+  tierSegments?: UsageChartSegment[];
+}
+
 export interface RangeData {
   kwh: number;
   deltaPct: number;
   period: string;
   comparison: string;
   bars: BarDatum[];
+  chartItems?: UsageChartItem[];
   shares: number[];
+  comparisonCurrent?: number[];
+  comparisonPrevious?: number[];
+  currentLabel?: string;
+  previousLabel?: string;
+  axisStart?: string;
+  axisEnd?: string;
+  datePrefix?: string;
 }
 
 export interface TierInfo {
@@ -85,6 +111,8 @@ export interface TierInfo {
   price: number;
   cap: number;
   color: string;
+  symbol?: string;
+  pattern?: 'solid' | 'hatch' | 'muted' | 'stripe-h' | 'grid' | 'cross';
 }
 
 export interface TOUInfo {
