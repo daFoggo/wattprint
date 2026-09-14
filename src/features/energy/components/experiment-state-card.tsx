@@ -1,24 +1,22 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 import { Fonts, WattPrintTokens } from '@/constants/theme';
-import { EXP_KEPT, EXP_LOG, EXP_SAVED } from '@/features/energy/mock';
-import type { ExperimentState } from '@/features/energy/types';
+import type { ActiveExperiment, ExperimentState } from '@/features/energy/types';
 
 interface ExperimentStateCardProps {
   state: ExperimentState;
-  temp: number;
-  onMinusTemp: () => void;
-  onPlusTemp: () => void;
-  onAction: () => void;
+  activeExperiment: ActiveExperiment | null;
+  onOpenCreate: () => void;
+  onOpenDetail: () => void;
 }
 
 export function ExperimentStateCard({
   state,
-  temp,
-  onMinusTemp,
-  onPlusTemp,
-  onAction,
+  activeExperiment,
+  onOpenCreate,
+  onOpenDetail,
 }: ExperimentStateCardProps) {
   const isRunning = state === 'running';
   const isSummary = state === 'summary';
@@ -37,44 +35,58 @@ export function ExperimentStateCard({
   let rightUnit = '';
 
   if (isRunning) {
-    tag = 'ĐANG CHẠY, NGÀY 3/7';
-    title = 'Điều hòa phòng khách 27°C kèm quạt, thay vì 24°C';
-    note = 'Giảm 38%, khoảng 85.000 đ mỗi tuần. Còn 4 ngày nữa đến đợt khảo sát độ thoải mái.';
-    btnLabel = 'Kết thúc thử nghiệm';
+    const day = activeExperiment?.currentDay ?? 3;
+    const total = activeExperiment?.totalDays ?? 7;
+    tag = `ĐANG CHẠY · NGÀY ${day}/${total}`;
+    title = activeExperiment?.title ?? 'Điều hòa 26,5°C kèm quạt, thay vì 24°C';
+    note = `Đã tiết kiệm ước tính ~${(activeExperiment?.predictedSavedVnd ?? 85000).toLocaleString('vi-VN')} đ. Dữ liệu công tơ đang đo đạc tự động.`;
+    btnLabel = 'Chi tiết & Kết thúc thử nghiệm';
     leftLabel = 'MỨC NỀN';
-    leftVal = '8.2';
+    leftVal = (activeExperiment?.baselineKwh ?? 8.2).toFixed(1);
     leftUnit = 'kWh/ngày';
-    rightLabel = 'HIỆN TẠI';
-    rightVal = '5.1';
+    rightLabel = 'ĐO ĐẠC';
+    rightVal = (activeExperiment?.targetKwh ?? 5.1).toFixed(1);
     rightUnit = 'kWh/ngày';
   } else if (isSummary) {
     tag = 'CHƯA CÓ THỬ NGHIỆM ĐANG CHẠY';
-    title = `Đã duy trì ${EXP_KEPT} trên ${EXP_LOG.length} thử nghiệm đến nay`;
-    note = 'Điều hòa vẫn là tải tiêu thụ lớn nhất. Tối ưu khung giờ bình nóng lạnh là mục tiêu tiềm năng tiếp theo.';
+    title = 'Hoàn tất thử nghiệm gần nhất';
+    note = 'Bạn có thể bắt đầu một thử nghiệm mới với thiết bị khác để tiếp tục tối ưu hóa hóa đơn điện.';
     btnLabel = 'Bắt đầu thử nghiệm mới';
     leftLabel = 'ĐÃ TIẾT KIỆM';
-    leftVal = `${Math.round(EXP_SAVED / 1000)}k`;
+    leftVal = '151k';
     leftUnit = 'VND';
-    rightLabel = 'THÓI QUEN DUY TRÌ';
-    rightVal = String(EXP_KEPT);
-    rightUnit = `trên ${EXP_LOG.length}`;
+    rightLabel = 'THÓI QUEN';
+    rightVal = '3';
+    rightUnit = 'đã duy trì';
   } else if (isSuggest) {
-    tag = 'GỢI Ý CHO BẠN';
-    title = `Giữ điều hòa phòng khách ở ${temp.toFixed(1)}°C kết hợp quạt`;
-    note = 'Thử nghiệm trong 3 ngày, sau đó trả lời một câu hỏi về cảm nhận. Điều chỉnh nhiệt độ mục tiêu trước khi bắt đầu.';
-    btnLabel = 'Bắt đầu thử nghiệm 3 ngày';
+    tag = 'GỢI Ý TỐI ƯU CHO BẠN';
+    title = 'Tăng nhiệt độ điều hòa 26,5°C kết hợp quạt thay vì 24°C';
+    note = 'Thử nghiệm trong 7 ngày để tìm mức tiện nghi tối ưu mà không nhảy bậc điện. Bạn có thể tùy chỉnh mốc nhiệt độ và thiết bị trước khi bắt đầu.';
+    btnLabel = 'Bắt đầu thử nghiệm';
     leftLabel = 'MỨC NỀN';
     leftVal = '8.2';
     leftUnit = 'kWh/ngày';
     rightLabel = 'ƯỚC TÍNH';
-    rightVal = '5.4';
+    rightVal = '5.1';
     rightUnit = 'kWh/ngày';
   } else {
     tag = 'ĐANG KHÓA';
     title = 'Đang ghi nhận mức tiêu thụ nền';
-    note = 'Các thử nghiệm so sánh dựa trên lịch sử của bạn, nên công tơ cần thêm 4 ngày đo đạc ổn định. Chưa cần thao tác gì lúc này.';
+    note = 'Các thử nghiệm so sánh dựa trên lịch sử đo đạc, công tơ cần thêm 4 ngày ổn định.';
     btnLabel = 'Khả dụng sau 4 ngày';
   }
+
+  const handleAction = () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    } catch {}
+
+    if (isRunning) {
+      onOpenDetail();
+    } else if (isSuggest || isSummary) {
+      onOpenCreate();
+    }
+  };
 
   return (
     <View style={[styles.card, isRunning && styles.cardRunning]}>
@@ -84,7 +96,7 @@ export function ExperimentStateCard({
       {/* Title */}
       <Text style={[styles.title, isRunning && styles.titleRunning]}>{title}</Text>
 
-      {/* Comparison Grid (if not locked) */}
+      {/* Comparison Grid */}
       {!isLocked && (
         <View style={styles.compareGrid}>
           {/* Left Box */}
@@ -124,18 +136,28 @@ export function ExperimentStateCard({
         </View>
       )}
 
-      {/* Temperature Stepper (only in suggested mode) */}
-      {isSuggest && (
-        <View style={styles.stepperContainer}>
-          <Text style={styles.stepperLabel}>Nhiệt độ mục tiêu</Text>
-          <View style={styles.stepperControls}>
-            <Pressable onPress={onMinusTemp} style={styles.stepBtn}>
-              <Text style={styles.stepBtnText}>-</Text>
-            </Pressable>
-            <Text style={styles.stepVal}>{temp.toFixed(1)} °C</Text>
-            <Pressable onPress={onPlusTemp} style={styles.stepBtn}>
-              <Text style={styles.stepBtnText}>+</Text>
-            </Pressable>
+      {/* Progress Track if running */}
+      {isRunning && (
+        <View style={styles.progressContainer}>
+          <View style={styles.progressHeader}>
+            <Text style={styles.progressLabel}>Tiến độ thử nghiệm</Text>
+            <Text style={styles.progressValue}>
+              {activeExperiment?.currentDay ?? 3} / {activeExperiment?.totalDays ?? 7} ngày
+            </Text>
+          </View>
+          <View style={styles.progressTrack}>
+            <View
+              style={[
+                styles.progressBar,
+                {
+                  width: `${Math.round(
+                    ((activeExperiment?.currentDay ?? 3) /
+                      (activeExperiment?.totalDays ?? 7)) *
+                      100
+                  )}%`,
+                },
+              ]}
+            />
           </View>
         </View>
       )}
@@ -143,23 +165,43 @@ export function ExperimentStateCard({
       {/* Note */}
       <Text style={[styles.note, isRunning && styles.noteRunning]}>{note}</Text>
 
-      {/* CTA Button */}
-      <Pressable
-        onPress={isLocked ? undefined : onAction}
-        style={[
-          styles.actionBtn,
-          isRunning && styles.actionBtnRunning,
-          isLocked && styles.actionBtnLocked,
-        ]}>
-        <Text
-          style={[
-            styles.actionBtnText,
-            isRunning && styles.actionBtnTextRunning,
-            isLocked && styles.actionBtnTextLocked,
+      {/* Actions */}
+      <View style={styles.btnRow}>
+        <Pressable
+          onPress={isLocked ? undefined : handleAction}
+          style={({ pressed }) => [
+            styles.actionBtn,
+            isRunning && styles.actionBtnRunning,
+            isLocked && styles.actionBtnLocked,
+            pressed && { opacity: 0.85, transform: [{ scale: 0.985 }] },
           ]}>
-          {btnLabel}
-        </Text>
-      </Pressable>
+          <Text
+            style={[
+              styles.actionBtnText,
+              isRunning && styles.actionBtnTextRunning,
+              isLocked && styles.actionBtnTextLocked,
+            ]}>
+            {btnLabel}
+          </Text>
+        </Pressable>
+
+        {/* Secondary button if in suggest mode */}
+        {isSuggest && (
+          <Pressable
+            onPress={() => {
+              try {
+                Haptics.selectionAsync();
+              } catch {}
+              onOpenCreate();
+            }}
+            style={({ pressed }) => [
+              styles.secondaryBtn,
+              pressed && { opacity: 0.7 },
+            ]}>
+            <Text style={styles.secondaryBtnText}>+ Tùy chỉnh thiết bị khác</Text>
+          </Pressable>
+        )}
+      </View>
     </View>
   );
 }
@@ -169,7 +211,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: WattPrintTokens.radii.xl, // 20px
     paddingVertical: 20,
-    paddingHorizontal: 22,
+    paddingHorizontal: 20,
     gap: 14,
   },
   cardRunning: {
@@ -225,7 +267,7 @@ const styles = StyleSheet.create({
   },
   boxVal: {
     fontFamily: Fonts.sansSemiBold,
-    fontSize: 26,
+    fontSize: 24,
     color: WattPrintTokens.colors.primary,
   },
   boxValDark: {
@@ -239,84 +281,88 @@ const styles = StyleSheet.create({
   },
   boxUnit: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 13,
+    fontSize: 12,
     color: WattPrintTokens.colors.secondary,
   },
   boxUnitDark: {
     color: WattPrintTokens.colors.inkInverseMuted,
   },
-  stepperContainer: {
+  progressContainer: {
+    gap: 6,
+    paddingTop: 2,
+  },
+  progressHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: WattPrintTokens.colors.primaryContainer, // #EFF4E6
-    borderRadius: WattPrintTokens.radii.lg, // 16px
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-  },
-  stepperLabel: {
-    fontFamily: Fonts.sansMedium,
-    fontSize: 14,
-    color: WattPrintTokens.colors.primary,
-  },
-  stepperControls: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
   },
-  stepBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: WattPrintTokens.radii.pill,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
+  progressLabel: {
+    fontFamily: Fonts.sans,
+    fontSize: 12,
+    color: WattPrintTokens.colors.inkInverseMuted,
   },
-  stepBtnText: {
+  progressValue: {
     fontFamily: Fonts.monoMedium,
-    fontSize: 18,
-    color: WattPrintTokens.colors.primary,
+    fontSize: 12,
+    color: WattPrintTokens.colors.tertiary,
   },
-  stepVal: {
-    fontFamily: Fonts.monoMedium,
-    fontSize: 16,
-    color: WattPrintTokens.colors.primary,
-    minWidth: 60,
-    textAlign: 'center',
+  progressTrack: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: WattPrintTokens.colors.tertiary, // #B5E930
+    borderRadius: 3,
   },
   note: {
     fontFamily: Fonts.sans,
-    fontSize: 14,
-    lineHeight: 21,
-    color: WattPrintTokens.colors.secondary,
+    fontSize: 13,
+    lineHeight: 18,
+    color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   noteRunning: {
-    color: WattPrintTokens.colors.inkInverseBody, // #DCEBD3
+    color: WattPrintTokens.colors.inkInverseMuted,
+  },
+  btnRow: {
+    gap: 8,
+    marginTop: 4,
   },
   actionBtn: {
     backgroundColor: WattPrintTokens.colors.primary, // #164437
     borderRadius: WattPrintTokens.radii.pill,
-    paddingVertical: 15,
+    paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
-    marginTop: 4,
   },
   actionBtnRunning: {
     backgroundColor: WattPrintTokens.colors.tertiary, // #B5E930
   },
   actionBtnLocked: {
-    backgroundColor: WattPrintTokens.colors.primaryContainer,
+    backgroundColor: '#D1D5DB',
   },
   actionBtnText: {
-    fontFamily: Fonts.sansSemiBold,
-    fontSize: 14,
+    fontFamily: Fonts.monoMedium,
+    fontSize: 13,
+    letterSpacing: 0.6,
     color: WattPrintTokens.colors.tertiary, // #B5E930
   },
   actionBtnTextRunning: {
     color: WattPrintTokens.colors.primary, // #164437
   },
   actionBtnTextLocked: {
-    color: WattPrintTokens.colors.secondary,
+    color: '#6B7280',
+  },
+  secondaryBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+  },
+  secondaryBtnText: {
+    fontFamily: Fonts.sansMedium,
+    fontSize: 13,
+    color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
 });

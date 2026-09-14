@@ -1,46 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Fonts, WattPrintTokens } from '@/constants/theme';
-import { Card } from '@/components/common/card';
+import { CreateExperimentSheet } from '@/features/energy/components/create-experiment-sheet';
+import { ExperimentDetailModal } from '@/features/energy/components/experiment-detail-modal';
+import { ExperimentHistorySheet } from '@/features/energy/components/experiment-history-sheet';
 import { ExperimentStateCard } from '@/features/energy/components/experiment-state-card';
-import { MOCK_EXP_LOG } from '@/features/energy/mock';
-import type { ExperimentState } from '@/features/energy/types';
 import { useEnergyStore } from '@/features/energy/use-energy-store';
 
-const EXP_STATES: { key: ExperimentState; label: string }[] = [
-  { key: 'running', label: 'Đang chạy' },
-  { key: 'summary', label: 'Tạm dừng' },
-  { key: 'suggest', label: 'Gợi ý' },
-  { key: 'locked', label: 'Chưa có mức nền' },
-];
+const EMOTION_MAP: Record<string, { emoji: string; label: string }> = {
+  comfortable: { emoji: '😃', label: 'Thoải mái' },
+  neutral: { emoji: '😐', label: 'Bình thường' },
+  uncomfortable: { emoji: '😓', label: 'Bất tiện' },
+};
 
 export function ExperimentScreen() {
   const {
     experimentState,
-    setExperimentState,
-    experimentTemp,
-    setExperimentTemp,
+    activeExperiment,
+    experimentLogs,
+    startExperiment,
+    endExperiment,
   } = useEnergyStore();
 
-  const handleMinusTemp = () => {
-    setExperimentTemp((prev) => Math.max(24, prev - 0.5));
-  };
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
-  const handlePlusTemp = () => {
-    setExperimentTemp((prev) => Math.min(29, prev + 0.5));
-  };
+  const visibleLogs = experimentLogs.slice(0, 3);
 
-  const handleAction = () => {
-    if (experimentState === 'running') {
-      setExperimentState('summary');
-    } else if (experimentState === 'summary') {
-      setExperimentState('suggest');
-    } else if (experimentState === 'suggest') {
-      setExperimentState('running');
-    }
+  const handleOpenHistory = () => {
+    try {
+      Haptics.selectionAsync();
+    } catch {}
+    setIsHistoryOpen(true);
   };
 
   return (
@@ -57,84 +53,99 @@ export function ExperimentScreen() {
           </Text>
         </View>
 
-        {/* Dynamic Active Experiment Card */}
+        {/* Dynamic Single Active Experiment Card */}
         <ExperimentStateCard
           state={experimentState}
-          temp={experimentTemp}
-          onMinusTemp={handleMinusTemp}
-          onPlusTemp={handlePlusTemp}
-          onAction={handleAction}
+          activeExperiment={activeExperiment}
+          onOpenCreate={() => setIsCreateOpen(true)}
+          onOpenDetail={() => setIsDetailOpen(true)}
         />
-
-        {/* Interactive State Switcher for Demoing */}
-        <View style={styles.statePicker}>
-          {EXP_STATES.map((st) => {
-            const isActive = experimentState === st.key;
-            return (
-              <Pressable
-                key={st.key}
-                onPress={() => setExperimentState(st.key)}
-                style={[
-                  styles.statePickerBtn,
-                  isActive && styles.statePickerBtnActive,
-                ]}>
-                <Text
-                  style={[
-                    styles.statePickerLabel,
-                    isActive && styles.statePickerLabelActive,
-                  ]}>
-                  {st.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
 
         {/* Past Experiments Section */}
         <View style={styles.pastHeader}>
           <Text style={styles.pastEyebrow}>THỬ NGHIỆM ĐÃ QUA</Text>
-          <Text style={styles.pastCount}>TỔNG CỘNG {MOCK_EXP_LOG.length}</Text>
+          {experimentLogs.length > 0 && (
+            <Pressable
+              onPress={handleOpenHistory}
+              hitSlop={8}
+              style={({ pressed }) => [styles.seeAllBtn, pressed && { opacity: 0.6 }]}>
+              <Text style={styles.seeAllText}>
+                XEM TẤT CẢ ({experimentLogs.length}) ›
+              </Text>
+            </Pressable>
+          )}
         </View>
 
-        <View style={styles.logList}>
-          {MOCK_EXP_LOG.map((log) => (
-            <Card
-              key={log.id}
-              className="border-0 shadow-none bg-white rounded-[18px] p-4 gap-2.5"
-              style={styles.logCard}>
-              <View style={styles.logTopRow}>
-                <Text style={styles.logTitle}>{log.title}</Text>
-                <View
-                  style={[
-                    styles.resultBadge,
-                    log.good ? styles.resultBadgeGood : styles.resultBadgeDropped,
-                  ]}>
-                  <Text
-                    style={[
-                      styles.resultText,
-                      log.good ? styles.resultTextGood : styles.resultTextDropped,
-                    ]}>
-                    {log.result}
-                  </Text>
+        {/* Unified List Container */}
+        <View style={styles.logListCard}>
+          {visibleLogs.map((item, index) => {
+            const emotionInfo = item.emotion ? EMOTION_MAP[item.emotion] : null;
+
+            return (
+              <View
+                key={item.id}
+                style={[
+                  styles.logRow,
+                  index > 0 && styles.logRowBorder,
+                ]}>
+                <View style={styles.logMain}>
+                  <Text style={styles.logTitle}>{item.title}</Text>
+                  <View style={styles.logMetaRow}>
+                    <Text style={styles.logDate}>{item.date}</Text>
+                    {item.note ? (
+                      <>
+                        <Text style={styles.logMetaDot}>•</Text>
+                        <Text style={styles.logNote} numberOfLines={1}>
+                          {item.note}
+                        </Text>
+                      </>
+                    ) : null}
+                  </View>
+                </View>
+
+                <View style={styles.logRight}>
+                  {item.savedVnd > 0 ? (
+                    <Text style={styles.logSaved}>
+                      +{item.savedVnd.toLocaleString('vi-VN')} đ
+                    </Text>
+                  ) : (
+                    <Text style={styles.logSavedZero}>0 đ</Text>
+                  )}
+
+                  {emotionInfo && (
+                    <View style={styles.emotionPill}>
+                      <Text style={styles.emotionEmoji}>{emotionInfo.emoji}</Text>
+                      <Text style={styles.emotionText}>{emotionInfo.label}</Text>
+                    </View>
+                  )}
                 </View>
               </View>
-
-              <View style={styles.logBottomRow}>
-                <Text style={styles.logDate}>{log.date}</Text>
-                <Text
-                  style={[
-                    styles.logSaved,
-                    log.good ? styles.logSavedGood : styles.logSavedDropped,
-                  ]}>
-                  {log.savedVnd > 0
-                    ? `tiết kiệm ${log.savedVnd.toLocaleString('vi-VN')} đ`
-                    : log.note}
-                </Text>
-              </View>
-            </Card>
-          ))}
+            );
+          })}
         </View>
       </ScrollView>
+
+      {/* S2: Create / Configure Sheet */}
+      <CreateExperimentSheet
+        visible={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        onStart={startExperiment}
+      />
+
+      {/* S3: Detail & Ending View */}
+      <ExperimentDetailModal
+        visible={isDetailOpen}
+        experiment={activeExperiment}
+        onClose={() => setIsDetailOpen(false)}
+        onEnd={endExperiment}
+      />
+
+      {/* Full History Sheet */}
+      <ExperimentHistorySheet
+        visible={isHistoryOpen}
+        logs={experimentLogs}
+        onClose={() => setIsHistoryOpen(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -157,7 +168,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: Fonts.sansSemiBold,
-    fontSize: 24,
+    fontSize: 26,
     color: WattPrintTokens.colors.primary, // #164437
   },
   lede: {
@@ -166,37 +177,13 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
-  statePicker: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    borderRadius: WattPrintTokens.radii.pill,
-    padding: 4,
-    gap: 2,
-    marginVertical: 2,
-  },
-  statePickerBtn: {
-    flex: 1,
-    paddingVertical: 8,
-    alignItems: 'center',
-    borderRadius: WattPrintTokens.radii.pill,
-  },
-  statePickerBtnActive: {
-    backgroundColor: WattPrintTokens.colors.primary, // #164437
-  },
-  statePickerLabel: {
-    fontFamily: Fonts.sansMedium,
-    fontSize: 13,
-    color: WattPrintTokens.colors.secondary,
-  },
-  statePickerLabelActive: {
-    color: WattPrintTokens.colors.tertiary, // #B5E930
-  },
   pastHeader: {
     flexDirection: 'row',
     alignItems: 'baseline',
     justifyContent: 'space-between',
     paddingHorizontal: 8,
-    paddingTop: 12,
+    paddingTop: 14,
+    paddingBottom: 2,
   },
   pastEyebrow: {
     fontFamily: Fonts.monoMedium,
@@ -204,74 +191,90 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
-  pastCount: {
-    fontFamily: Fonts.monoMedium,
-    fontSize: 12,
-    color: WattPrintTokens.colors.secondary,
+  seeAllBtn: {
+    paddingVertical: 2,
   },
-  logList: {
-    gap: 10,
-  },
-  logCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    paddingVertical: 16,
-    paddingHorizontal: 18,
-    gap: 10,
-  },
-  logTopRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'space-between',
-    gap: 10,
-  },
-  logTitle: {
-    flex: 1,
-    fontFamily: Fonts.sansMedium,
-    fontSize: 15,
-    lineHeight: 21,
-    color: WattPrintTokens.colors.primary, // #164437
-  },
-  resultBadge: {
-    borderRadius: WattPrintTokens.radii.pill,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-  },
-  resultBadgeGood: {
-    backgroundColor: '#DEEEBD',
-  },
-  resultBadgeDropped: {
-    backgroundColor: WattPrintTokens.colors.neutralGround, // #F2F4ED
-  },
-  resultText: {
+  seeAllText: {
     fontFamily: Fonts.monoMedium,
     fontSize: 12,
     letterSpacing: 0.5,
+    color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
-  resultTextGood: {
-    color: '#1E5A08',
+  logListCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    paddingHorizontal: 16,
   },
-  resultTextDropped: {
-    color: WattPrintTokens.colors.secondary,
-  },
-  logBottomRow: {
+  logRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingVertical: 14,
+    gap: 12,
+  },
+  logRowBorder: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#E7EBE1',
+  },
+  logMain: {
+    flex: 1,
+    gap: 4,
+  },
+  logTitle: {
+    fontFamily: Fonts.sansMedium,
+    fontSize: 14,
+    lineHeight: 20,
+    color: WattPrintTokens.colors.primary, // #164437
+  },
+  logMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   logDate: {
-    fontFamily: Fonts.mono,
-    fontSize: 13,
-    color: WattPrintTokens.colors.secondary, // #4A6B60
+    fontFamily: Fonts.monoMedium,
+    fontSize: 12,
+    color: WattPrintTokens.colors.secondary,
+  },
+  logMetaDot: {
+    fontSize: 12,
+    color: WattPrintTokens.colors.secondary,
+  },
+  logNote: {
+    fontFamily: Fonts.sans,
+    fontSize: 12,
+    color: WattPrintTokens.colors.secondary,
+    flex: 1,
+  },
+  logRight: {
+    alignItems: 'flex-end',
+    gap: 5,
   },
   logSaved: {
-    fontFamily: Fonts.monoMedium,
-    fontSize: 13,
-  },
-  logSavedGood: {
+    fontFamily: Fonts.sansSemiBold,
+    fontSize: 14,
     color: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
-  logSavedDropped: {
+  logSavedZero: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 13,
     color: WattPrintTokens.colors.secondary,
+  },
+  emotionPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: WattPrintTokens.colors.primaryContainer, // #EFF4E6
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: WattPrintTokens.radii.pill,
+  },
+  emotionEmoji: {
+    fontSize: 12,
+  },
+  emotionText: {
+    fontFamily: Fonts.sans,
+    fontSize: 11,
+    color: WattPrintTokens.colors.primary,
   },
 });

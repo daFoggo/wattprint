@@ -172,14 +172,40 @@ export interface Suggestion {
 
 export type ExperimentState = 'running' | 'summary' | 'suggest' | 'locked';
 
+export type EmotionType = 'comfortable' | 'neutral' | 'uncomfortable';
+
+export interface DeviceDailyLog {
+  day: number;
+  date: string;
+  kwh: number;
+  runtime: string;
+}
+
+export interface ActiveExperiment {
+  id: string;
+  deviceId: string;
+  deviceName: string;
+  title: string;
+  baselineKwh: number;
+  targetKwh: number;
+  predictedSavedKwh: number;
+  predictedSavedVnd: number;
+  currentDay: number;
+  totalDays: number;
+  dailyLogs: DeviceDailyLog[];
+  emotion?: EmotionType;
+}
+
 export interface ExperimentLogItem {
   id: string;
   title: string;
   date: string;
-  result: string;
+  result?: string;
   savedVnd: number;
+  savedKwh?: number;
   note: string;
   good: boolean;
+  emotion?: EmotionType;
 }
 
 export interface AccountGroup {

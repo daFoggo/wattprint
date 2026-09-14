@@ -3,19 +3,24 @@ import { createContext, useCallback, useContext, useMemo, useState, type PropsWi
 import {
   CURRENT_TIER,
   DAYS_LEFT,
+  DEFAULT_ACTIVE_EXPERIMENT,
   HEADROOM,
   INITIAL_CHAT,
   MOCK_CHAT_THREADS,
+  MOCK_EXP_LOG,
   MOCK_SUGGESTIONS,
   MONTH_KWH,
   PACE,
 } from './mock';
 import type {
+  ActiveExperiment,
   BreakdownView,
   BubbleDevice,
   ChatMessage,
   ChatThread,
   CustomerType,
+  EmotionType,
+  ExperimentLogItem,
   ExperimentState,
   Range,
   TariffPlan,
@@ -66,6 +71,11 @@ interface EnergyStoreValue {
   setExperimentState: (state: ExperimentState) => void;
   experimentTemp: number;
   setExperimentTemp: React.Dispatch<React.SetStateAction<number>>;
+  activeExperiment: ActiveExperiment | null;
+  setActiveExperiment: (exp: ActiveExperiment | null) => void;
+  experimentLogs: ExperimentLogItem[];
+  startExperiment: (exp: ActiveExperiment) => void;
+  endExperiment: (emotion: EmotionType) => void;
 }
 
 const EnergyStoreContext = createContext<EnergyStoreValue | null>(null);
@@ -85,8 +95,35 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
   const [threads, setThreads] = useState<ChatThread[]>(MOCK_CHAT_THREADS);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(INITIAL_CHAT);
-  const [experimentState, setExperimentState] = useState<ExperimentState>('running');
+  const [experimentState, setExperimentState] = useState<ExperimentState>('suggest');
   const [experimentTemp, setExperimentTemp] = useState<number>(26.5);
+  const [activeExperiment, setActiveExperiment] = useState<ActiveExperiment | null>(DEFAULT_ACTIVE_EXPERIMENT);
+  const [experimentLogs, setExperimentLogs] = useState<ExperimentLogItem[]>(MOCK_EXP_LOG);
+
+  const startExperiment = useCallback((exp: ActiveExperiment) => {
+    setActiveExperiment(exp);
+    setExperimentState('running');
+  }, []);
+
+  const endExperiment = useCallback((emotion: EmotionType) => {
+    if (activeExperiment) {
+      const savedVnd = activeExperiment.predictedSavedVnd;
+      const savedKwh = Math.round(activeExperiment.predictedSavedKwh * activeExperiment.currentDay * 10) / 10;
+      const newLogItem: ExperimentLogItem = {
+        id: `exp-${Date.now()}`,
+        title: activeExperiment.title,
+        date: 'Hôm nay (3 ngày)',
+        savedVnd,
+        savedKwh,
+        good: emotion !== 'uncomfortable',
+        emotion,
+        note: emotion === 'comfortable' ? 'Thoải mái, sinh hoạt bình thường' : emotion === 'neutral' ? 'Bình thường, quen dần' : 'Bất tiện, cần điều chỉnh',
+      };
+      setExperimentLogs((prev) => [newLogItem, ...prev]);
+    }
+    setActiveExperiment(null);
+    setExperimentState('summary');
+  }, [activeExperiment]);
 
   const toggleUnit = () => {
     setUnit((prev) => (prev === 'kwh' ? 'cost' : 'kwh'));
@@ -313,6 +350,11 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
       setExperimentState,
       experimentTemp,
       setExperimentTemp,
+      activeExperiment,
+      setActiveExperiment,
+      experimentLogs,
+      startExperiment,
+      endExperiment,
     }),
     [
       range,
@@ -334,6 +376,10 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
       sendChatMessage,
       experimentState,
       experimentTemp,
+      activeExperiment,
+      experimentLogs,
+      startExperiment,
+      endExperiment,
     ]
   );
 

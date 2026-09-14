@@ -11,6 +11,7 @@ import type {
   DeviceDetailData,
   DeviceUsage,
   EnergySummary,
+  ActiveExperiment,
   ExperimentLogItem,
   RangeData,
   Suggestion,
@@ -835,33 +836,169 @@ export const MOCK_CHAT_THREADS: ChatThread[] = [
   },
 ];
 
+export const DEFAULT_ACTIVE_EXPERIMENT: ActiveExperiment = {
+  id: 'exp-active-1',
+  deviceId: 'dev-0',
+  deviceName: 'Điều hòa',
+  title: 'Điều hòa phòng khách 26,5°C kèm quạt thay vì 24°C',
+  baselineKwh: 8.2,
+  targetKwh: 5.1,
+  predictedSavedKwh: 3.1,
+  predictedSavedVnd: 85000,
+  currentDay: 3,
+  totalDays: 7,
+  dailyLogs: [
+    { day: 1, date: '12/09', kwh: 5.2, runtime: '5h 10p' },
+    { day: 2, date: '13/09', kwh: 4.9, runtime: '4h 45p' },
+    { day: 3, date: '14/09 (Hôm nay)', kwh: 5.1, runtime: '5h 00p' },
+  ],
+};
+
+export interface ExperimentTemplate {
+  deviceId: string;
+  deviceName: string;
+  title: string;
+  defaultTarget: number;
+  minTarget: number;
+  maxTarget: number;
+  step: number;
+  unit: string;
+  baselineKwh: number;
+  defaultTargetKwh: number;
+  calcPrediction: (targetVal: number, extraOption?: boolean) => {
+    targetKwh: number;
+    savedKwhPerDay: number;
+    savedVndPerWeek: number;
+    pct: number;
+    summary: string;
+  };
+}
+
+export const EXPERIMENT_TEMPLATES: ExperimentTemplate[] = [
+  {
+    deviceId: 'dev-0',
+    deviceName: 'Điều hòa',
+    title: 'Điều hòa phòng khách kèm quạt',
+    defaultTarget: 26.5,
+    minTarget: 24.0,
+    maxTarget: 29.0,
+    step: 0.5,
+    unit: '°C',
+    baselineKwh: 8.2,
+    defaultTargetKwh: 5.1,
+    calcPrediction: (targetTemp: number, withFan = true) => {
+      const delta = targetTemp - 24;
+      const pct = Math.min(50, Math.max(10, Math.round(delta * 7 + (withFan ? 8 : 0))));
+      const savedKwh = Math.round(8.2 * (pct / 100) * 10) / 10;
+      const targetKwh = Math.round((8.2 - savedKwh) * 10) / 10;
+      const savedVnd = Math.round(savedKwh * 7 * 2700);
+      return {
+        targetKwh,
+        savedKwhPerDay: savedKwh,
+        savedVndPerWeek: savedVnd,
+        pct,
+        summary: `Tăng nhiệt độ lên ${targetTemp.toFixed(1)}°C ${withFan ? 'kèm quạt gió' : ''} giúp máy nén ngắt nghỉ sớm hơn, giảm ~${pct}% điện năng thiết bị.`,
+      };
+    },
+  },
+  {
+    deviceId: 'dev-1',
+    deviceName: 'Bình nóng lạnh',
+    title: 'Chuyển khung giờ & thời gian đun nước',
+    defaultTarget: 20,
+    minTarget: 15,
+    maxTarget: 40,
+    step: 5,
+    unit: 'phút',
+    baselineKwh: 4.8,
+    defaultTargetKwh: 3.2,
+    calcPrediction: (minutes: number) => {
+      const savedKwh = Math.round(((45 - minutes) / 45) * 2.2 * 10) / 10;
+      const targetKwh = Math.round((4.8 - savedKwh) * 10) / 10;
+      const savedVnd = Math.round(savedKwh * 7 * 2700);
+      const pct = Math.round((savedKwh / 4.8) * 100);
+      return {
+        targetKwh,
+        savedKwhPerDay: savedKwh,
+        savedVndPerWeek: savedVnd,
+        pct,
+        summary: `Bật bình trước khi tắm ${minutes} phút thay vì cắm liên tục giúp giảm thất thoát nhiệt dư thừa qua đêm.`,
+      };
+    },
+  },
+  {
+    deviceId: 'dev-4',
+    deviceName: 'Chạy ngầm',
+    title: 'Ngắt nguồn ổ cắm cụm TV sau 23:30',
+    defaultTarget: 23,
+    minTarget: 21,
+    maxTarget: 24,
+    step: 1,
+    unit: 'giờ',
+    baselineKwh: 1.4,
+    defaultTargetKwh: 0.6,
+    calcPrediction: () => {
+      return {
+        targetKwh: 0.6,
+        savedKwhPerDay: 0.8,
+        savedVndPerWeek: 15000,
+        pct: 57,
+        summary: 'Cắt toàn bộ nguồn standby của TV, loa thanh và TV box qua đêm giúp triệt tiêu phụ tải chờ thụ động.',
+      };
+    },
+  },
+];
+
 export const MOCK_EXP_LOG: ExperimentLogItem[] = [
   {
     id: 'exp-1',
     title: 'Chuyển bình nóng lạnh sang khung giờ 22:00',
-    date: '18 đến 25 Thg 8',
-    result: 'Áp dụng',
+    date: '18 - 25 Thg 8',
     savedVnd: 52000,
-    note: '',
+    savedKwh: 18.2,
+    note: 'Nước vẫn đủ ấm cho buổi sáng',
     good: true,
+    emotion: 'comfortable',
   },
   {
     id: 'exp-2',
     title: 'Điều hòa 27°C không bật quạt',
-    date: '2 đến 5 Thg 8',
-    result: 'Hủy bỏ',
+    date: '2 - 5 Thg 8',
     savedVnd: 0,
+    savedKwh: 0,
     note: 'Quá nóng vào ban đêm',
     good: false,
+    emotion: 'uncomfortable',
   },
   {
     id: 'exp-3',
-    title: 'Cụm TV cắm ổ có công tắc ngắt',
-    date: '21 đến 28 Thg 7',
-    result: 'Áp dụng',
+    title: 'Cụm TV cắm ổ có công tắc ngắt ban đêm',
+    date: '21 - 28 Thg 7',
     savedVnd: 61000,
-    note: '',
+    savedKwh: 21.5,
+    note: 'Ngắt nguồn hoàn toàn sau 23:30',
     good: true,
+    emotion: 'comfortable',
+  },
+  {
+    id: 'exp-4',
+    title: 'Bật máy rửa bát chế độ Eco nửa tải',
+    date: '10 - 17 Thg 7',
+    savedVnd: 38000,
+    savedKwh: 13.4,
+    note: 'Chén bát vẫn sạch hoàn toàn',
+    good: true,
+    emotion: 'neutral',
+  },
+  {
+    id: 'exp-5',
+    title: 'Nấu ăn bếp từ khung giờ thấp điểm',
+    date: '1 - 7 Thg 7',
+    savedVnd: 45000,
+    savedKwh: 15.8,
+    note: 'Chuẩn bị nguyên liệu sớm hơn',
+    good: true,
+    emotion: 'comfortable',
   },
 ];
 
