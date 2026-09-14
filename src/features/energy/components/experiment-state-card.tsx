@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { Plus } from 'lucide-react-native';
 
 import { Fonts, WattPrintTokens } from '@/constants/theme';
 import type { ActiveExperiment, ExperimentState } from '@/features/energy/types';
@@ -198,7 +199,10 @@ export function ExperimentStateCard({
               styles.secondaryBtn,
               pressed && { opacity: 0.7 },
             ]}>
-            <Text style={styles.secondaryBtnText}>+ Tùy chỉnh thiết bị khác</Text>
+            <View style={styles.secondaryBtnContent}>
+              <Plus size={14} color={WattPrintTokens.colors.primary} strokeWidth={2.4} />
+              <Text style={styles.secondaryBtnText}>Tùy chỉnh thiết bị khác</Text>
+            </View>
           </Pressable>
         )}
       </View>
@@ -359,6 +363,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 8,
+  },
+  secondaryBtnContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   secondaryBtnText: {
     fontFamily: Fonts.sansMedium,

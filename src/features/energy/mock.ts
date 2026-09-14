@@ -927,23 +927,53 @@ export const EXPERIMENT_TEMPLATES: ExperimentTemplate[] = [
     },
   },
   {
-    deviceId: 'dev-4',
-    deviceName: 'Chạy ngầm',
-    title: 'Ngắt nguồn ổ cắm cụm TV sau 23:30',
-    defaultTarget: 23,
-    minTarget: 21,
-    maxTarget: 24,
-    step: 1,
-    unit: 'giờ',
-    baselineKwh: 1.4,
-    defaultTargetKwh: 0.6,
-    calcPrediction: () => {
+    deviceId: 'dev-2',
+    deviceName: 'Bếp từ',
+    title: 'Nấu ăn tập trung & điều chỉnh công suất',
+    defaultTarget: 35,
+    minTarget: 20,
+    maxTarget: 60,
+    step: 5,
+    unit: 'phút',
+    baselineKwh: 2.6,
+    defaultTargetKwh: 1.8,
+    calcPrediction: (minutes: number) => {
+      const savedKwh = Math.round(((50 - minutes) / 50) * 1.2 * 10) / 10;
+      const targetKwh = Math.round((2.6 - savedKwh) * 10) / 10;
+      const savedVnd = Math.round(savedKwh * 7 * 2700);
+      const pct = Math.round((savedKwh / 2.6) * 100);
       return {
-        targetKwh: 0.6,
-        savedKwhPerDay: 0.8,
-        savedVndPerWeek: 15000,
-        pct: 57,
-        summary: 'Cắt toàn bộ nguồn standby của TV, loa thanh và TV box qua đêm giúp triệt tiêu phụ tải chờ thụ động.',
+        targetKwh,
+        savedKwhPerDay: Math.max(0.1, savedKwh),
+        savedVndPerWeek: Math.max(5000, savedVnd),
+        pct: Math.max(5, pct),
+        summary: 'Chuẩn bị sẵn nguyên liệu và tận dụng nhiệt dư tắt bếp sớm 2-3 phút giúp giảm tiêu thụ điện nấu ăn.',
+      };
+    },
+  },
+  {
+    deviceId: 'dev-3',
+    deviceName: 'Tủ lạnh',
+    title: 'Cài đặt nhiệt độ ngăn mát mức tối ưu',
+    defaultTarget: 4,
+    minTarget: 2,
+    maxTarget: 6,
+    step: 1,
+    unit: '°C',
+    baselineKwh: 1.9,
+    defaultTargetKwh: 1.4,
+    calcPrediction: (temp: number) => {
+      const delta = temp - 2;
+      const pct = Math.min(35, Math.max(10, Math.round(delta * 6 + 10)));
+      const savedKwh = Math.round(1.9 * (pct / 100) * 10) / 10;
+      const targetKwh = Math.round((1.9 - savedKwh) * 10) / 10;
+      const savedVnd = Math.round(savedKwh * 7 * 2700);
+      return {
+        targetKwh,
+        savedKwhPerDay: savedKwh,
+        savedVndPerWeek: savedVnd,
+        pct,
+        summary: `Cài đặt ngăn mát ở ${temp}°C và sắp xếp thông thoáng giúp luồng khí lưu thông tốt, giảm chu kỳ đóng ngắt lốc lạnh.`,
       };
     },
   },
@@ -972,11 +1002,11 @@ export const MOCK_EXP_LOG: ExperimentLogItem[] = [
   },
   {
     id: 'exp-3',
-    title: 'Cụm TV cắm ổ có công tắc ngắt ban đêm',
+    title: 'Tủ lạnh: Cài đặt ngăn mát 4°C',
     date: '21 - 28 Thg 7',
-    savedVnd: 61000,
-    savedKwh: 21.5,
-    note: 'Ngắt nguồn hoàn toàn sau 23:30',
+    savedVnd: 34000,
+    savedKwh: 12.6,
+    note: 'Thực phẩm bảo quản tốt, lốc máy chạy êm hơn',
     good: true,
     emotion: 'comfortable',
   },

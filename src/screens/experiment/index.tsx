@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { ChevronRight, Frown, Meh, Smile } from 'lucide-react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -11,10 +12,10 @@ import { ExperimentHistorySheet } from '@/features/energy/components/experiment-
 import { ExperimentStateCard } from '@/features/energy/components/experiment-state-card';
 import { useEnergyStore } from '@/features/energy/use-energy-store';
 
-const EMOTION_MAP: Record<string, { emoji: string; label: string }> = {
-  comfortable: { emoji: '😃', label: 'Thoải mái' },
-  neutral: { emoji: '😐', label: 'Bình thường' },
-  uncomfortable: { emoji: '😓', label: 'Bất tiện' },
+const EMOTION_MAP: Record<string, { label: string }> = {
+  comfortable: { label: 'Thoải mái' },
+  neutral: { label: 'Bình thường' },
+  uncomfortable: { label: 'Bất tiện' },
 };
 
 export function ExperimentScreen() {
@@ -70,8 +71,9 @@ export function ExperimentScreen() {
               hitSlop={8}
               style={({ pressed }) => [styles.seeAllBtn, pressed && { opacity: 0.6 }]}>
               <Text style={styles.seeAllText}>
-                XEM TẤT CẢ ({experimentLogs.length}) ›
+                XEM TẤT CẢ ({experimentLogs.length})
               </Text>
+              <ChevronRight size={13} color={WattPrintTokens.colors.secondary} strokeWidth={2.2} />
             </Pressable>
           )}
         </View>
@@ -79,7 +81,7 @@ export function ExperimentScreen() {
         {/* Unified List Container */}
         <View style={styles.logListCard}>
           {visibleLogs.map((item, index) => {
-            const emotionInfo = item.emotion ? EMOTION_MAP[item.emotion] : null;
+            const emotionLabel = item.emotion ? EMOTION_MAP[item.emotion]?.label : null;
 
             return (
               <View
@@ -112,10 +114,16 @@ export function ExperimentScreen() {
                     <Text style={styles.logSavedZero}>0 đ</Text>
                   )}
 
-                  {emotionInfo && (
+                  {item.emotion && (
                     <View style={styles.emotionPill}>
-                      <Text style={styles.emotionEmoji}>{emotionInfo.emoji}</Text>
-                      <Text style={styles.emotionText}>{emotionInfo.label}</Text>
+                      {item.emotion === 'comfortable' ? (
+                        <Smile size={12} color="#2F7A0C" strokeWidth={2.2} />
+                      ) : item.emotion === 'neutral' ? (
+                        <Meh size={12} color="#7A6B1A" strokeWidth={2.2} />
+                      ) : (
+                        <Frown size={12} color="#C44536" strokeWidth={2.2} />
+                      )}
+                      <Text style={styles.emotionText}>{emotionLabel}</Text>
                     </View>
                   )}
                 </View>
@@ -192,6 +200,9 @@ const styles = StyleSheet.create({
     color: WattPrintTokens.colors.secondary, // #4A6B60
   },
   seeAllBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
     paddingVertical: 2,
   },
   seeAllText: {

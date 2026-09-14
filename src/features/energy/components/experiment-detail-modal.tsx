@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { Check, Frown, Meh, Smile, X } from 'lucide-react-native';
 
 import { Fonts, WattPrintTokens } from '@/constants/theme';
 import type { ActiveExperiment, EmotionType } from '@/features/energy/types';
@@ -22,25 +23,21 @@ interface ExperimentDetailModalProps {
 
 const EMOTION_OPTIONS: {
   key: EmotionType;
-  emoji: string;
   label: string;
   desc: string;
 }[] = [
   {
     key: 'comfortable',
-    emoji: '😃',
     label: 'Thoải mái',
     desc: 'Dễ chịu, không xáo trộn sinh hoạt',
   },
   {
     key: 'neutral',
-    emoji: '😐',
     label: 'Bình thường',
     desc: 'Chấp nhận được, quen dần',
   },
   {
     key: 'uncomfortable',
-    emoji: '😓',
     label: 'Bất tiện',
     desc: 'Khó chịu, nóng hoặc bất tiện',
   },
@@ -102,7 +99,7 @@ export function ExperimentDetailModal({
               onPress={onClose}
               hitSlop={12}
               style={({ pressed }) => [styles.closeBtn, pressed && { opacity: 0.6 }]}>
-              <Text style={styles.closeBtnText}>✕</Text>
+              <X size={18} color={WattPrintTokens.colors.primary} strokeWidth={2.2} />
             </Pressable>
           </View>
 
@@ -210,7 +207,39 @@ export function ExperimentDetailModal({
                           isSelected && styles.emotionBtnSelected,
                           pressed && { opacity: 0.8 },
                         ]}>
-                        <Text style={styles.emotionEmoji}>{opt.emoji}</Text>
+                        <View
+                          style={[
+                            styles.emotionIconWrap,
+                            isSelected && styles.emotionIconWrapSelected,
+                          ]}>
+                          {opt.key === 'comfortable' ? (
+                            <Smile
+                              size={22}
+                              color={
+                                isSelected
+                                  ? WattPrintTokens.colors.accentDeep
+                                  : WattPrintTokens.colors.secondary
+                              }
+                              strokeWidth={2.2}
+                            />
+                          ) : opt.key === 'neutral' ? (
+                            <Meh
+                              size={22}
+                              color={
+                                isSelected ? '#8A6E10' : WattPrintTokens.colors.secondary
+                              }
+                              strokeWidth={2.2}
+                            />
+                          ) : (
+                            <Frown
+                              size={22}
+                              color={
+                                isSelected ? '#C44536' : WattPrintTokens.colors.secondary
+                              }
+                              strokeWidth={2.2}
+                            />
+                          )}
+                        </View>
                         <View style={styles.emotionContent}>
                           <Text
                             style={[
@@ -229,7 +258,7 @@ export function ExperimentDetailModal({
                         </View>
                         {isSelected && (
                           <View style={styles.radioActive}>
-                            <Text style={styles.radioCheck}>✓</Text>
+                            <Check size={12} color="#FFFFFF" strokeWidth={3} />
                           </View>
                         )}
                       </Pressable>
@@ -497,8 +526,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#EFF8EA',
     borderColor: WattPrintTokens.colors.accentDeep, // #2F7A0C
   },
-  emotionEmoji: {
-    fontSize: 26,
+  emotionIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#E7EBE1',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emotionIconWrapSelected: {
+    backgroundColor: '#E4F5BE',
   },
   emotionContent: {
     flex: 1,

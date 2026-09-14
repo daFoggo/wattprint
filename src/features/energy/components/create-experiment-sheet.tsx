@@ -8,14 +8,23 @@ import {
   View,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import {
+  ArrowRight,
+  Check,
+  Minus,
+  Plus,
+  Sparkles,
+  X,
+} from 'lucide-react-native';
 
 import { Fonts, WattPrintTokens } from '@/constants/theme';
-import {
-  EXPERIMENT_TEMPLATES,
-  type ExperimentTemplate,
-} from '@/features/energy/mock';
+import { EXPERIMENT_TEMPLATES } from '@/features/energy/mock';
 import type { ActiveExperiment } from '@/features/energy/types';
 import { ApplianceIcon } from './appliance-icon';
+
+function generateExperimentId(): string {
+  return `exp-${Date.now()}`;
+}
 
 interface CreateExperimentSheetProps {
   visible: boolean;
@@ -33,7 +42,6 @@ export function CreateExperimentSheet({
 
   const [targetVal, setTargetVal] = useState<number>(currentTemplate.defaultTarget);
   const [extraOption, setExtraOption] = useState<boolean>(true); // e.g. with fan
-  const [hasPredicted, setHasPredicted] = useState<boolean>(false);
 
   // Switch template
   const handleSelectTemplate = (index: number) => {
@@ -43,7 +51,6 @@ export function CreateExperimentSheet({
     const tmpl = EXPERIMENT_TEMPLATES[index];
     setSelectedTemplateIndex(index);
     setTargetVal(tmpl.defaultTarget);
-    setHasPredicted(false);
   };
 
   const handleMinus = () => {
@@ -51,7 +58,6 @@ export function CreateExperimentSheet({
       Haptics.selectionAsync();
     } catch {}
     setTargetVal((prev) => Math.max(currentTemplate.minTarget, prev - currentTemplate.step));
-    setHasPredicted(false);
   };
 
   const handlePlus = () => {
@@ -59,17 +65,9 @@ export function CreateExperimentSheet({
       Haptics.selectionAsync();
     } catch {}
     setTargetVal((prev) => Math.min(currentTemplate.maxTarget, prev + currentTemplate.step));
-    setHasPredicted(false);
   };
 
   const prediction = currentTemplate.calcPrediction(targetVal, extraOption);
-
-  const handlePredict = () => {
-    try {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } catch {}
-    setHasPredicted(true);
-  };
 
   const handleConfirmStart = () => {
     try {
@@ -77,7 +75,7 @@ export function CreateExperimentSheet({
     } catch {}
 
     const newExperiment: ActiveExperiment = {
-      id: `exp-${Date.now()}`,
+      id: generateExperimentId(),
       deviceId: currentTemplate.deviceId,
       deviceName: currentTemplate.deviceName,
       title: `${currentTemplate.deviceName}: ${targetVal}${currentTemplate.unit} ${
@@ -126,7 +124,7 @@ export function CreateExperimentSheet({
               onPress={onClose}
               hitSlop={12}
               style={({ pressed }) => [styles.closeBtn, pressed && { opacity: 0.6 }]}>
-              <Text style={styles.closeBtnText}>✕</Text>
+              <X size={18} color={WattPrintTokens.colors.primary} strokeWidth={2.2} />
             </Pressable>
           </View>
 
@@ -185,7 +183,7 @@ export function CreateExperimentSheet({
                         styles.stepBtn,
                         pressed && styles.stepBtnPressed,
                       ]}>
-                      <Text style={styles.stepBtnText}>-</Text>
+                      <Minus size={16} color={WattPrintTokens.colors.primary} strokeWidth={2.5} />
                     </Pressable>
                     <Text style={styles.stepValue}>
                       {targetVal.toFixed(currentTemplate.step < 1 ? 1 : 0)} {currentTemplate.unit}
@@ -197,7 +195,7 @@ export function CreateExperimentSheet({
                         styles.stepBtn,
                         pressed && styles.stepBtnPressed,
                       ]}>
-                      <Text style={styles.stepBtnText}>+</Text>
+                      <Plus size={16} color={WattPrintTokens.colors.primary} strokeWidth={2.5} />
                     </Pressable>
                   </View>
                 )}
@@ -211,7 +209,6 @@ export function CreateExperimentSheet({
                       Haptics.selectionAsync();
                     } catch {}
                     setExtraOption((prev) => !prev);
-                    setHasPredicted(false);
                   }}
                   style={styles.toggleRow}>
                   <View
@@ -219,7 +216,7 @@ export function CreateExperimentSheet({
                       styles.toggleBox,
                       extraOption && styles.toggleBoxActive,
                     ]}>
-                    {extraOption && <Text style={styles.checkmark}>✓</Text>}
+                    {extraOption && <Check size={13} color="#FFFFFF" strokeWidth={3} />}
                   </View>
                   <Text style={styles.toggleLabel}>
                     Kết hợp bật quạt gió trần/cây để làm mát đều
@@ -228,73 +225,69 @@ export function CreateExperimentSheet({
               )}
             </View>
 
-            {/* Step 3: Comparison Grid (Before vs Target) */}
-            <Text style={styles.sectionLabel}>3. SO SÁNH TRƯỚC VÀ SAU THỬ NGHIỆM</Text>
-            <View style={styles.compareGrid}>
-              {/* Baseline */}
-              <View style={styles.compareBox}>
-                <Text style={styles.compareBoxTag}>MỨC NỀN TRƯỚC</Text>
-                <View style={styles.compareValRow}>
-                  <Text style={styles.compareVal}>
-                    {currentTemplate.baselineKwh.toFixed(1)}
-                  </Text>
-                  <Text style={styles.compareUnit}>kWh/ngày</Text>
+            {/* Step 3: Unified Impact & Comparison Card */}
+            <Text style={styles.sectionLabel}>3. DỰ KIẾN HIỆU QUẢ & TIẾT KIỆM (7 NGÀY)</Text>
+            <View style={styles.impactCard}>
+              {/* Savings Headline Badge */}
+              <View style={styles.impactTopRow}>
+                <View style={styles.impactBadge}>
+                  <Sparkles size={14} color={WattPrintTokens.colors.primary} strokeWidth={2.2} />
+                  <Text style={styles.impactBadgeText}>ƯỚC TÍNH TIẾT KIỆM</Text>
                 </View>
-                <Text style={styles.compareSub}>Dữ liệu đo đạc 14 ngày</Text>
-              </View>
-
-              {/* Arrow */}
-              <View style={styles.arrowBox}>
-                <Text style={styles.arrowText}>→</Text>
-              </View>
-
-              {/* Target */}
-              <View style={[styles.compareBox, styles.compareBoxTarget]}>
-                <Text style={[styles.compareBoxTag, styles.compareBoxTagTarget]}>
-                  MỤC TIÊU DỰ KIẾN
+                <Text style={styles.impactVndHighlight}>
+                  ~{prediction.savedVndPerWeek.toLocaleString('vi-VN')} đ/tuần
                 </Text>
-                <View style={styles.compareValRow}>
-                  <Text style={[styles.compareVal, styles.compareValTarget]}>
-                    {prediction.targetKwh.toFixed(1)}
-                  </Text>
-                  <Text style={[styles.compareUnit, styles.compareUnitTarget]}>
-                    kWh/ngày
+              </View>
+
+              {/* High Contrast Comparison Row */}
+              <View style={styles.impactCompareRow}>
+                {/* Baseline Pillar */}
+                <View style={styles.pillarBox}>
+                  <Text style={styles.pillarLabel}>MỨC NỀN ĐO ĐẠC</Text>
+                  <View style={styles.pillarValRow}>
+                    <Text style={styles.pillarVal}>
+                      {currentTemplate.baselineKwh.toFixed(1)}
+                    </Text>
+                    <Text style={styles.pillarUnit}>kWh/ngày</Text>
+                  </View>
+                  <Text style={styles.pillarSub}>Trung bình 14 ngày</Text>
+                </View>
+
+                {/* Arrow & Delta in the middle */}
+                <View style={styles.pillarDivider}>
+                  <ArrowRight size={18} color={WattPrintTokens.colors.secondary} strokeWidth={2.2} />
+                  <View style={styles.pillarDeltaBadge}>
+                    <Text style={styles.pillarDeltaText}>-{prediction.pct}%</Text>
+                  </View>
+                </View>
+
+                {/* Target Pillar - Solid Primary Green Card (Max Contrast) */}
+                <View style={[styles.pillarBox, styles.pillarBoxTarget]}>
+                  <Text style={styles.pillarLabelTarget}>MỤC TIÊU MỚI</Text>
+                  <View style={styles.pillarValRow}>
+                    <Text style={styles.pillarValTarget}>
+                      {prediction.targetKwh.toFixed(1)}
+                    </Text>
+                    <Text style={styles.pillarUnitTarget}>kWh/ngày</Text>
+                  </View>
+                  <Text style={styles.pillarSubTarget}>
+                    Giảm {prediction.savedKwhPerDay.toFixed(1)} kWh/ngày
                   </Text>
                 </View>
-                <Text style={styles.compareSub}>
-                  Giảm {prediction.pct}% phụ tải
+              </View>
+
+              {/* Contextual Tariff & Sufficiency Insight */}
+              <View style={styles.impactSummaryBox}>
+                <Text style={styles.impactSummaryText}>{prediction.summary}</Text>
+                <Text style={styles.impactTariffNote}>
+                  Ước tính cắt giảm {prediction.savedKwhPerDay.toFixed(1)} kWh/ngày, hạn chế nguy cơ nhảy sang Bậc 4 EVN (2.860 đ/kWh).
                 </Text>
               </View>
             </View>
+          </ScrollView>
 
-            {/* Step 4: Predict Action & Prediction Box */}
-            <Pressable
-              onPress={handlePredict}
-              style={({ pressed }) => [
-                styles.predictBtn,
-                pressed && { opacity: 0.75, transform: [{ scale: 0.985 }] },
-              ]}>
-              <Text style={styles.predictBtnSparkle}>✨</Text>
-              <Text style={styles.predictBtnText}>Dự đoán thay đổi tiêu thụ</Text>
-            </Pressable>
-
-            {hasPredicted && (
-              <View style={styles.predictionBox}>
-                <View style={styles.predictionTop}>
-                  <Text style={styles.predictionBadge}>DỰ BÁO TIẾT KIỆM</Text>
-                  <Text style={styles.predictionHighlight}>
-                    ~{prediction.savedVndPerWeek.toLocaleString('vi-VN')} đ/tuần
-                  </Text>
-                </View>
-                <Text style={styles.predictionSummary}>{prediction.summary}</Text>
-                <Text style={styles.predictionNote}>
-                  Ước tính khoảng {prediction.savedKwhPerDay.toFixed(1)} kWh/ngày,
-                  tương đương giảm rủi ro nhảy sang Bậc 4 EVN.
-                </Text>
-              </View>
-            )}
-
-            {/* CTA: Start Experiment */}
+          {/* Sticky CTA Button at Bottom */}
+          <View style={styles.footerWrap}>
             <Pressable
               onPress={handleConfirmStart}
               style={({ pressed }) => [
@@ -303,7 +296,7 @@ export function CreateExperimentSheet({
               ]}>
               <Text style={styles.startBtnText}>BẮT ĐẦU THỬ NGHIỆM (7 NGÀY)</Text>
             </Pressable>
-          </ScrollView>
+          </View>
         </View>
       </View>
     </Modal>
@@ -497,116 +490,142 @@ const styles = StyleSheet.create({
     color: WattPrintTokens.colors.primary,
     lineHeight: 17,
   },
-  compareGrid: {
+  impactCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 16,
+    gap: 14,
+  },
+  impactTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#E7EBE1',
+  },
+  impactBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#E7EBE1',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: WattPrintTokens.radii.pill,
+  },
+  impactBadgeText: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 12,
+    letterSpacing: 0.5,
+    color: WattPrintTokens.colors.primary,
+  },
+  impactVndHighlight: {
+    fontFamily: Fonts.sansSemiBold,
+    fontSize: 16,
+    color: WattPrintTokens.colors.accentDeep, // #2F7A0C
+  },
+  impactCompareRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-  compareBox: {
+  pillarBox: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 14,
+    backgroundColor: WattPrintTokens.colors.neutralGround, // #F2F4ED
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
     gap: 4,
   },
-  compareBoxTarget: {
-    backgroundColor: WattPrintTokens.colors.primaryContainer, // #EFF4E6
+  pillarBoxTarget: {
+    backgroundColor: WattPrintTokens.colors.primary, // #164437 - Solid primary green
   },
-  compareBoxTag: {
+  pillarLabel: {
     fontFamily: Fonts.monoMedium,
     fontSize: 12,
-    letterSpacing: 0.5,
+    letterSpacing: 0.4,
     color: WattPrintTokens.colors.secondary,
   },
-  compareBoxTagTarget: {
-    color: WattPrintTokens.colors.accentDeep,
+  pillarLabelTarget: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 12,
+    letterSpacing: 0.4,
+    color: WattPrintTokens.colors.tertiary, // #B5E930 - Crisp neon lime
   },
-  compareValRow: {
+  pillarValRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: 4,
   },
-  compareVal: {
+  pillarVal: {
     fontFamily: Fonts.sansSemiBold,
     fontSize: 22,
     color: WattPrintTokens.colors.primary,
   },
-  compareValTarget: {
-    color: WattPrintTokens.colors.accentDeep,
+  pillarValTarget: {
+    fontFamily: Fonts.sansSemiBold,
+    fontSize: 22,
+    color: '#FFFFFF', // Crisp White
   },
-  compareUnit: {
+  pillarUnit: {
     fontFamily: Fonts.monoMedium,
     fontSize: 12,
     color: WattPrintTokens.colors.secondary,
   },
-  compareUnitTarget: {
-    color: WattPrintTokens.colors.accentDeep,
+  pillarUnitTarget: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 12,
+    color: '#CCD3C7',
   },
-  compareSub: {
+  pillarSub: {
     fontFamily: Fonts.sans,
     fontSize: 12,
     color: WattPrintTokens.colors.secondary,
   },
-  arrowBox: {
-    width: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  arrowText: {
-    fontFamily: Fonts.sansSemiBold,
-    fontSize: 18,
-    color: WattPrintTokens.colors.secondary,
-  },
-  predictBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 12,
-    borderRadius: 14,
-  },
-  predictBtnSparkle: {
-    fontSize: 15,
-  },
-  predictBtnText: {
-    fontFamily: Fonts.sansSemiBold,
-    fontSize: 14,
-    color: WattPrintTokens.colors.accentDeep, // #2F7A0C
-  },
-  predictionBox: {
-    backgroundColor: WattPrintTokens.colors.primary, // #164437
-    borderRadius: 18,
-    padding: 16,
-    gap: 8,
-  },
-  predictionTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  predictionBadge: {
-    fontFamily: Fonts.monoMedium,
+  pillarSubTarget: {
+    fontFamily: Fonts.sansMedium,
     fontSize: 12,
-    letterSpacing: 0.6,
     color: WattPrintTokens.colors.tertiary, // #B5E930
   },
-  predictionHighlight: {
-    fontFamily: Fonts.sansSemiBold,
-    fontSize: 16,
-    color: WattPrintTokens.colors.tertiary, // #B5E930
+  pillarDivider: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
   },
-  predictionSummary: {
+  pillarDeltaBadge: {
+    backgroundColor: '#E4F5BE',
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  pillarDeltaText: {
+    fontFamily: Fonts.monoSemiBold,
+    fontSize: 12,
+    color: WattPrintTokens.colors.accentDeep,
+  },
+  impactSummaryBox: {
+    backgroundColor: '#F7F9F5',
+    borderRadius: 12,
+    padding: 12,
+    gap: 4,
+  },
+  impactSummaryText: {
     fontFamily: Fonts.sans,
     fontSize: 13,
     lineHeight: 18,
-    color: '#FFFFFF',
+    color: WattPrintTokens.colors.primary,
   },
-  predictionNote: {
+  impactTariffNote: {
     fontFamily: Fonts.sans,
     fontSize: 12,
-    color: WattPrintTokens.colors.inkInverseMuted,
     lineHeight: 16,
+    color: WattPrintTokens.colors.secondary,
+  },
+  footerWrap: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#E2E7DB',
   },
   startBtn: {
     backgroundColor: WattPrintTokens.colors.primary, // #164437
@@ -614,7 +633,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
   },
   startBtnText: {
     fontFamily: Fonts.monoMedium,

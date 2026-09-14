@@ -8,6 +8,8 @@ import {
   View,
 } from 'react-native';
 
+import { Frown, Meh, Smile, X } from 'lucide-react-native';
+
 import { Fonts, WattPrintTokens } from '@/constants/theme';
 import type { ExperimentLogItem } from '@/features/energy/types';
 
@@ -17,10 +19,10 @@ interface ExperimentHistorySheetProps {
   onClose: () => void;
 }
 
-const EMOTION_MAP: Record<string, { emoji: string; label: string }> = {
-  comfortable: { emoji: '😃', label: 'Thoải mái' },
-  neutral: { emoji: '😐', label: 'Bình thường' },
-  uncomfortable: { emoji: '😓', label: 'Bất tiện' },
+const EMOTION_MAP: Record<string, { label: string }> = {
+  comfortable: { label: 'Thoải mái' },
+  neutral: { label: 'Bình thường' },
+  uncomfortable: { label: 'Bất tiện' },
 };
 
 export function ExperimentHistorySheet({
@@ -50,7 +52,7 @@ export function ExperimentHistorySheet({
               onPress={onClose}
               hitSlop={12}
               style={({ pressed }) => [styles.closeBtn, pressed && { opacity: 0.6 }]}>
-              <Text style={styles.closeBtnText}>✕</Text>
+              <X size={18} color={WattPrintTokens.colors.primary} strokeWidth={2.2} />
             </Pressable>
           </View>
 
@@ -59,7 +61,7 @@ export function ExperimentHistorySheet({
             contentContainerStyle={styles.scrollContent}>
             <View style={styles.listCard}>
               {logs.map((item, index) => {
-                const emotionInfo = item.emotion ? EMOTION_MAP[item.emotion] : null;
+                const emotionLabel = item.emotion ? EMOTION_MAP[item.emotion]?.label : null;
                 return (
                   <View
                     key={item.id}
@@ -91,10 +93,16 @@ export function ExperimentHistorySheet({
                         <Text style={styles.itemSavedZero}>0 đ</Text>
                       )}
 
-                      {emotionInfo && (
+                      {item.emotion && (
                         <View style={styles.emotionPill}>
-                          <Text style={styles.emotionEmoji}>{emotionInfo.emoji}</Text>
-                          <Text style={styles.emotionText}>{emotionInfo.label}</Text>
+                          {item.emotion === 'comfortable' ? (
+                            <Smile size={12} color="#2F7A0C" strokeWidth={2.2} />
+                          ) : item.emotion === 'neutral' ? (
+                            <Meh size={12} color="#7A6B1A" strokeWidth={2.2} />
+                          ) : (
+                            <Frown size={12} color="#C44536" strokeWidth={2.2} />
+                          )}
+                          <Text style={styles.emotionText}>{emotionLabel}</Text>
                         </View>
                       )}
                     </View>
