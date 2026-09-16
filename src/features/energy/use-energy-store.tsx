@@ -54,8 +54,6 @@ interface EnergyStoreValue {
   setCustomerType: (type: CustomerType) => void;
   chartBreakdown: 'tou' | 'tier';
   setChartBreakdown: (mode: 'tou' | 'tier') => void;
-  isBillingOpen: boolean;
-  setIsBillingOpen: (open: boolean) => void;
 
   // Copilot Chat State
   threads: ChatThread[];
@@ -91,11 +89,10 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
   const [activeDeviceDetail, setActiveDeviceDetail] = useState<BubbleDevice | null>(null);
   const [customerType, setCustomerType] = useState<CustomerType>('home');
   const [chartBreakdown, setChartBreakdown] = useState<'tou' | 'tier'>('tier');
-  const [isBillingOpen, setIsBillingOpen] = useState<boolean>(false);
   const [threads, setThreads] = useState<ChatThread[]>(MOCK_CHAT_THREADS);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(INITIAL_CHAT);
-  const [experimentState, setExperimentState] = useState<ExperimentState>('suggest');
+  const [experimentState, setExperimentState] = useState<ExperimentState>('running');
   const [experimentTemp, setExperimentTemp] = useState<number>(26.5);
   const [activeExperiment, setActiveExperiment] = useState<ActiveExperiment | null>(DEFAULT_ACTIVE_EXPERIMENT);
   const [experimentLogs, setExperimentLogs] = useState<ExperimentLogItem[]>(MOCK_EXP_LOG);
@@ -197,6 +194,7 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
         text: ansText,
         facts,
         cta: hit.cta,
+        ctaDesc: hit.ctaDesc,
       };
     } else {
       aiMsg = {
@@ -299,6 +297,7 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
         text,
         facts,
         cta: hit.cta,
+        ctaDesc: hit.ctaDesc,
       };
     } else {
       aiMsg = {
@@ -337,8 +336,6 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
       setCustomerType,
       chartBreakdown,
       setChartBreakdown,
-      isBillingOpen,
-      setIsBillingOpen,
       threads,
       activeThreadId,
       setActiveThreadId,
@@ -367,7 +364,6 @@ export function EnergyStoreProvider({ children }: PropsWithChildren) {
       activeDeviceDetail,
       customerType,
       chartBreakdown,
-      isBillingOpen,
       threads,
       activeThreadId,
       createThread,

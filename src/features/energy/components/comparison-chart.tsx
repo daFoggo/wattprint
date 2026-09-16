@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Stop } from 'react-native-svg';
 
@@ -133,8 +133,14 @@ export function ComparisonChart({
     return m * 1.25;
   }, [currentSeries, previousSeries]);
 
-  const getX = (idx: number) => padX + (idx / (totalDays - 1)) * plotW;
-  const getY = (val: number) => padTop + plotH - (val / maxDailyVal) * plotH;
+  const getX = useCallback(
+    (idx: number) => padX + (idx / (totalDays - 1)) * plotW,
+    [padX, totalDays, plotW]
+  );
+  const getY = useCallback(
+    (val: number) => padTop + plotH - (val / maxDailyVal) * plotH,
+    [padTop, plotH, maxDailyVal]
+  );
 
   // Points for daily curve paths using smoothed trend values
   const smoothedLast = useMemo(() => smoothDailyValues(previousSeries), [previousSeries]);
@@ -142,11 +148,11 @@ export function ComparisonChart({
 
   const lastPoints = useMemo(
     () => smoothedLast.map((val, i) => ({ x: getX(i), y: getY(val) })),
-    [smoothedLast, totalDays, plotW, plotH, maxDailyVal]
+    [smoothedLast, getX, getY]
   );
   const nowPoints = useMemo(
     () => smoothedNow.map((val, i) => ({ x: getX(i), y: getY(val) })),
-    [smoothedNow, totalDays, plotW, plotH, maxDailyVal]
+    [smoothedNow, getX, getY]
   );
 
   const lastPath = useMemo(() => createSmoothCurvePath(lastPoints, 0.22), [lastPoints]);

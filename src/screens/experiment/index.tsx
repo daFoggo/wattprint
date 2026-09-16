@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { ChevronRight, Frown, Meh, Smile } from 'lucide-react-native';
+import { ChevronRight, Frown, Meh, Plus, Smile } from 'lucide-react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -45,9 +45,25 @@ export function ExperimentScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
-        {/* Ground Title & Lede */}
+        {/* Ground Title & Lede with Quick Create Action */}
         <View style={styles.groundHeader}>
-          <Text style={styles.title}>Thử nghiệm</Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.title}>Thử nghiệm</Text>
+            <Pressable
+              onPress={() => {
+                try {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                } catch {}
+                setIsCreateOpen(true);
+              }}
+              style={({ pressed }) => [
+                styles.quickCreateBtn,
+                pressed && { opacity: 0.8, transform: [{ scale: 0.97 }] },
+              ]}>
+              <Plus size={15} color={WattPrintTokens.colors.primary} strokeWidth={2.4} />
+              <Text style={styles.quickCreateText}>Tạo nhanh</Text>
+            </Pressable>
+          </View>
           <Text style={styles.lede}>
             Thay đổi một thói quen trong vài ngày. Mức tiêu thụ nền đã được ghi nhận tự động,
             không cần nhập liệu thủ công.
@@ -174,9 +190,29 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingBottom: 4,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   title: {
     fontFamily: Fonts.sansSemiBold,
     fontSize: 26,
+    color: WattPrintTokens.colors.primary, // #164437
+  },
+  quickCreateBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: WattPrintTokens.colors.tertiary, // #B5E930
+    paddingVertical: 7,
+    paddingHorizontal: 13,
+    borderRadius: WattPrintTokens.radii.pill,
+  },
+  quickCreateText: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 12,
+    letterSpacing: 0.4,
     color: WattPrintTokens.colors.primary, // #164437
   },
   lede: {

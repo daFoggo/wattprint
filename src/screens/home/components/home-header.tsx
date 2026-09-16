@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { SymbolView } from 'expo-symbols';
 
 import { Fonts, WattPrintTokens } from '@/constants/theme';
 
@@ -11,7 +12,7 @@ export function HomeHeader({ onPressAi }: HomeHeaderProps) {
   return (
     <View style={styles.header}>
       <View style={styles.greetingContainer}>
-        <Text style={styles.date}>THỨ BA, 9 THÁNG 9</Text>
+        <Text style={styles.date}>CHỦ NHẬT, 14 THÁNG 9</Text>
         <Text style={styles.greeting}>Chào buổi tối, Minh</Text>
       </View>
 
@@ -20,7 +21,11 @@ export function HomeHeader({ onPressAi }: HomeHeaderProps) {
         accessibilityRole="button"
         accessibilityLabel="Mở Trợ lý năng lượng AI"
         style={styles.aiButton}>
-        <Text style={styles.aiText}>AI</Text>
+        <SymbolView
+          name={{ ios: 'sparkles', android: 'auto_awesome', web: 'auto_awesome' }}
+          size={22}
+          tintColor={WattPrintTokens.colors.primary}
+        />
       </Pressable>
     </View>
   );
@@ -57,10 +62,5 @@ const styles = StyleSheet.create({
     backgroundColor: WattPrintTokens.colors.tertiary, // #B5E930 Green Lizard
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  aiText: {
-    fontFamily: Fonts.monoSemiBold,
-    fontSize: 13,
-    color: WattPrintTokens.colors.primary, // #164437 MSU Green
   },
 });

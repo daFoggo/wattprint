@@ -195,6 +195,34 @@ export function ExperimentDetailModal({
                   Trong quá trình thử nghiệm, bạn cảm thấy thế nào?
                 </Text>
 
+                {/* 3 Quick Emotion Buttons */}
+                <View style={styles.quickEmotionRow}>
+                  {EMOTION_OPTIONS.map((opt) => {
+                    const isSelected = selectedEmotion === opt.key;
+                    return (
+                      <Pressable
+                        key={opt.key}
+                        onPress={() => handleSelectEmotion(opt.key)}
+                        style={({ pressed }) => [
+                          styles.quickEmotionChip,
+                          isSelected && styles.quickEmotionChipSelected,
+                          pressed && { opacity: 0.75 },
+                        ]}>
+                        <Text style={styles.quickEmotionEmoji}>
+                          {opt.key === 'comfortable' ? '😊' : opt.key === 'neutral' ? '😐' : '🙁'}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.quickEmotionText,
+                            isSelected && styles.quickEmotionTextSelected,
+                          ]}>
+                          {opt.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+
                 <View style={styles.emotionList}>
                   {EMOTION_OPTIONS.map((opt) => {
                     const isSelected = selectedEmotion === opt.key;
@@ -507,6 +535,39 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
     color: WattPrintTokens.colors.primary,
+  },
+  quickEmotionRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  quickEmotionChip: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: WattPrintTokens.colors.primaryContainer, // #EFF4E6
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    borderRadius: WattPrintTokens.radii.pill,
+    borderWidth: 1.5,
+    borderColor: 'transparent',
+  },
+  quickEmotionChipSelected: {
+    backgroundColor: '#EFF8EA',
+    borderColor: WattPrintTokens.colors.accentDeep,
+  },
+  quickEmotionEmoji: {
+    fontSize: 16,
+  },
+  quickEmotionText: {
+    fontFamily: Fonts.sansMedium,
+    fontSize: 12,
+    color: WattPrintTokens.colors.primary,
+  },
+  quickEmotionTextSelected: {
+    fontFamily: Fonts.sansSemiBold,
+    color: WattPrintTokens.colors.accentDeep,
   },
   emotionList: {
     gap: 8,

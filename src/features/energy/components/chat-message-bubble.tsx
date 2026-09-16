@@ -22,6 +22,11 @@ export function ChatMessageBubble({ message, onCtaPress }: ChatMessageBubbleProp
     );
   }
 
+  const hasData =
+    !!message.weather ||
+    !!message.tariffFact ||
+    (message.facts && message.facts.length > 0);
+
   return (
     <View style={styles.aiBlock}>
       {/* Editorial Block Header */}
@@ -36,15 +41,39 @@ export function ChatMessageBubble({ message, onCtaPress }: ChatMessageBubbleProp
       {/* Grounded Body Text */}
       <Text style={styles.aiText}>{message.text}</Text>
 
-      {/* Integrated Provenance Facts Grid */}
-      {message.facts && message.facts.length > 0 && (
-        <View style={styles.factsGrid}>
-          {message.facts.map((fact, idx) => (
-            <View key={idx} style={styles.factCol}>
-              <Text style={styles.factKey} numberOfLines={1}>
+      {/* Unified Data Reference Table */}
+      {hasData && (
+        <View style={styles.dataCard}>
+          <Text style={styles.dataTitle}>DỮ LIỆU ĐỐI CHIẾU</Text>
+
+          {message.weather && (
+            <View style={styles.dataRow}>
+              <Text style={styles.dataKey} numberOfLines={1}>
+                Nhiệt độ ngoài trời
+              </Text>
+              <Text style={styles.dataVal} numberOfLines={1}>
+                {message.weather.tempC}°C · +{message.weather.diffC}°C
+              </Text>
+            </View>
+          )}
+
+          {message.tariffFact && (
+            <View style={styles.dataRow}>
+              <Text style={styles.dataKey} numberOfLines={1}>
+                Bậc giá EVN
+              </Text>
+              <Text style={styles.dataVal} numberOfLines={1}>
+                {message.tariffFact.currentTier} · còn {message.tariffFact.headroomKwh} kWh
+              </Text>
+            </View>
+          )}
+
+          {message.facts?.map((fact, idx) => (
+            <View key={idx} style={styles.dataRow}>
+              <Text style={styles.dataKey} numberOfLines={1}>
                 {fact.k}
               </Text>
-              <Text style={styles.factVal}>
+              <Text style={styles.dataVal} numberOfLines={1}>
                 {fact.v}
               </Text>
             </View>
@@ -52,13 +81,26 @@ export function ChatMessageBubble({ message, onCtaPress }: ChatMessageBubbleProp
         </View>
       )}
 
-      {/* Action CTA Button */}
+      {/* Proposal + Action CTA */}
       {message.cta && (
-        <Pressable
-          onPress={() => onCtaPress?.(message.cta!)}
-          style={styles.ctaBtn}>
-          <Text style={styles.ctaBtnText}>{message.cta} →</Text>
-        </Pressable>
+        <>
+          {message.ctaDesc && (
+            <View style={styles.proposal}>
+              <Text style={styles.proposalLabel}>ĐỀ XUẤT THỬ NGHIỆM</Text>
+              <Text style={styles.proposalText}>{message.ctaDesc}</Text>
+            </View>
+          )}
+
+          <Pressable
+            onPress={() => onCtaPress?.(message.cta!)}
+            style={({ pressed }) => [
+              styles.ctaBtn,
+              pressed && { opacity: 0.85 },
+            ]}>
+            <Text style={styles.ctaBtnText}>{message.cta}</Text>
+            <Text style={styles.ctaArrow}>→</Text>
+          </Pressable>
+        </>
       )}
     </View>
   );
@@ -125,42 +167,84 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: WattPrintTokens.colors.primary, // #164437
   },
-  factsGrid: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: WattPrintTokens.colors.primaryContainer, // #EFF4E6
-    borderRadius: WattPrintTokens.radii.sm,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    gap: 8,
+  dataCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: WattPrintTokens.radii.md,
+    borderWidth: 1,
+    borderColor: '#E2E8D8',
+    paddingHorizontal: 14,
+    paddingBottom: 4,
   },
-  factCol: {
-    flex: 1,
-    gap: 3,
-  },
-  factKey: {
+  dataTitle: {
     fontFamily: Fonts.monoMedium,
     fontSize: 11,
-    letterSpacing: 0.4,
+    letterSpacing: 0.6,
+    color: WattPrintTokens.colors.accentDeep, // #2F7A0C
+    paddingTop: 10,
+    paddingBottom: 2,
+  },
+  dataRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    paddingVertical: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#E2E8D8',
+  },
+  dataKey: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 11,
+    letterSpacing: 0.3,
     color: WattPrintTokens.colors.secondary, // #4A6B60
     textTransform: 'uppercase',
+    flexShrink: 1,
   },
-  factVal: {
-    fontFamily: Fonts.monoMedium,
+  dataVal: {
+    fontFamily: Fonts.sansSemiBold,
     fontSize: 13,
+    color: WattPrintTokens.colors.primary, // #164437
+    textAlign: 'right',
+    flexShrink: 1,
+  },
+  proposal: {
+    gap: 3,
+    marginTop: 2,
+  },
+  proposalLabel: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 10,
+    letterSpacing: 0.6,
+    color: WattPrintTokens.colors.accentDeep, // #2F7A0C
+  },
+  proposalText: {
+    fontFamily: Fonts.sansSemiBold,
+    fontSize: 14,
+    lineHeight: 20,
     color: WattPrintTokens.colors.primary, // #164437
   },
   ctaBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
     backgroundColor: WattPrintTokens.colors.tertiary, // #B5E930
     borderRadius: WattPrintTokens.radii.pill,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    alignSelf: 'flex-start',
+    paddingVertical: 12,
+    paddingHorizontal: 18,
     marginTop: 2,
   },
   ctaBtnText: {
     fontFamily: Fonts.sansSemiBold,
     fontSize: 14,
+    lineHeight: 19,
+    color: WattPrintTokens.colors.primary, // #164437
+    textAlign: 'center',
+    flexShrink: 1,
+  },
+  ctaArrow: {
+    fontFamily: Fonts.sansSemiBold,
+    fontSize: 15,
     color: WattPrintTokens.colors.primary, // #164437
   },
 });

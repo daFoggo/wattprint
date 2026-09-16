@@ -7,11 +7,9 @@ import { useRouter } from 'expo-router';
 import { Fonts, WattPrintTokens } from '@/constants/theme';
 import { Card } from '@/components/common/card';
 import { ACCOUNT_GROUPS } from '@/features/energy/mock';
-import { useEnergyStore } from '@/features/energy/use-energy-store';
 
 export function AccountScreen() {
   const router = useRouter();
-  const { setIsBillingOpen } = useEnergyStore();
   const [tierWarnings, setTierWarnings] = useState(true);
   const [phantomAlerts, setPhantomAlerts] = useState(true);
 
@@ -37,10 +35,7 @@ export function AccountScreen() {
         {/* Paired Status Cards */}
         <View style={styles.pairedGrid}>
           <Pressable
-            onPress={() => {
-              setIsBillingOpen(true);
-              router.push('/usage');
-            }}
+            onPress={() => router.push('/account/billing')}
             accessibilityRole="button"
             accessibilityLabel="Xem chi tiết biểu phí và hóa đơn"
             style={styles.statusCardPressable}>

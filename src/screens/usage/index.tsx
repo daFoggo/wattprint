@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useNavigation } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import Animated, { Easing, SlideInRight, SlideOutRight } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
@@ -8,27 +8,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Fonts, WattPrintTokens } from '@/constants/theme';
 import { Card } from '@/components/common/card';
-import { BillingTariffView } from '@/features/energy/components/billing-tariff-view';
 import { BreakdownTable } from '@/features/energy/components/breakdown-table';
 import { ComparisonChart } from '@/features/energy/components/comparison-chart';
+import { CopilotInsightCard } from '@/features/energy/components/copilot-insight-card';
 import { DonutBreakdown } from '@/features/energy/components/donut-breakdown';
 import { NeighbourComparison } from '@/features/energy/components/neighbour-comparison';
 import { UnderlineTabRow } from '@/features/energy/components/underline-tab-row';
 import { UsageBarChart } from '@/features/energy/components/usage-bar-chart';
-import { TierVisualBox } from '@/features/energy/components/tier-visual-box';
 import {
-  CROSS_DAY,
   getUsageDevices,
-  HEADROOM,
   LAST_MONTH_30_DAYS,
-  MONTH_COST,
-  NEXT_TIER,
-  PACE,
   RATE,
-  STEP_PCT,
   THIS_MONTH_DAYS,
-  TIER_USED,
-  TIERS,
   USAGE_RANGES,
 } from '@/features/energy/mock';
 import type { BubbleDevice, UsageTab } from '@/features/energy/types';
@@ -43,6 +34,7 @@ const TABS: { key: UsageTab; label: string }[] = [
 
 export function UsageScreen() {
   const navigation = useNavigation();
+  const router = useRouter();
   const {
     unit,
     toggleUnit,
@@ -54,17 +46,15 @@ export function UsageScreen() {
     setSelectedUsageBar,
     activeDeviceDetail,
     setActiveDeviceDetail,
-    isBillingOpen,
-    setIsBillingOpen,
+    setActiveThreadId,
   } = useEnergyStore();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('tabPress' as any, () => {
       setActiveDeviceDetail(null);
-      setIsBillingOpen(false);
     });
     return unsubscribe;
-  }, [navigation, setActiveDeviceDetail, setIsBillingOpen]);
+  }, [navigation, setActiveDeviceDetail]);
 
   // Hardware back press listener for Android
   useEffect(() => {
@@ -85,19 +75,9 @@ export function UsageScreen() {
       ? `${Math.round(currentRangeData.kwh * RATE).toLocaleString('vi-VN')}`
       : `${currentRangeData.kwh.toLocaleString('vi-VN')}`;
   const heroUnit = unit === 'cost' ? 'VND' : 'kWh';
-  const otherUnit = unit === 'cost' ? 'kWh' : 'VND';
 
   const bars = currentRangeData?.bars ?? [];
   const chartItems = currentRangeData?.chartItems ?? [];
-  const pickedBar =
-    bars[Math.min(selectedUsageBar, Math.max(0, bars.length - 1))] ?? ['-', 0, ''];
-  const pickedItem =
-    chartItems[Math.min(selectedUsageBar, Math.max(0, chartItems.length - 1))] ?? {
-      label: pickedBar[0],
-      tooltip: pickedBar[2],
-      kwh: pickedBar[1],
-      cost: Math.round(pickedBar[1] * RATE),
-    };
 
   const handleDevicePress = (device: BubbleDevice) => {
     try {
@@ -113,7 +93,7 @@ export function UsageScreen() {
     if (usageTab === 'week') {
       return 'Tuần 37 (08/09 - 14/09/2026)';
     }
-    return 'Tháng 09/2026';
+    return 'Tháng 09/2026 (01/09 - 14/09)';
   }, [usageTab]);
 
   return (
@@ -192,7 +172,7 @@ export function UsageScreen() {
             </Pressable>
           </View>
 
-          {/* Subtle Period Summary Banner (Matching reference design) */}
+          {/* Subtle Period Summary Banner */}
           <View style={styles.estimationBanner}>
             <Text style={styles.estimationText}>
               Ước tính cả kỳ: <Text style={styles.estimationHighlight}>{heroValue} {heroUnit}</Text>
@@ -212,129 +192,75 @@ export function UsageScreen() {
           />
         </View>
 
-        {/* REMAINING SECTION CARDS */}
+        {/* REMAINING SECTION CARDS FOR USAGE */}
         <View style={styles.cardsContainer}>
-        {/* CARD: BREAKDOWN - DONUT + TABLE */}
-        <Card
-          className="border-0 shadow-none bg-white rounded-[20px] p-5 gap-4"
-          style={styles.card}>
-          <View style={styles.cardHeaderRow}>
-            <Text style={styles.eyebrow}>PHÂN BỔ THIẾT BỊ</Text>
-          </View>
-
-          <DonutBreakdown
-            devices={devices}
-            selectedIndex={selectedDeviceIndex}
-            onSelectIndex={setSelectedDeviceIndex}
-            unitMode={unit}
-            totalKwh={currentRangeData.kwh}
-            periodLabel={currentRangeData.period}
-            onDevicePress={handleDevicePress}
-          />
-
-          <BreakdownTable
-            devices={devices}
-            selectedIndex={selectedDeviceIndex}
-            unitMode={unit}
-            onSelect={setSelectedDeviceIndex}
-            onDevicePress={handleDevicePress}
-          />
-        </Card>
-
-        {/* CARD: RANGE-AWARE COMPARISON CHART */}
-        <Card
-          className="border-0 shadow-none bg-white rounded-[20px] p-5 gap-4"
-          style={styles.card}>
-          <View style={styles.cardHeaderRow}>
-            <Text style={styles.eyebrow}>SO SÁNH CÙNG KỲ</Text>
-          </View>
-
-          <ComparisonChart
-            currentSeries={THIS_MONTH_DAYS}
-            previousSeries={LAST_MONTH_30_DAYS}
-            currentDayIndex={THIS_MONTH_DAYS.length - 1}
-            currentLabel="Tháng này"
-            previousLabel="Tháng trước"
-            currentDateLabel="14/09"
-            axisStart="01/09"
-            axisEnd="30/09"
-            unitMode={unit}
-            rate={RATE}
-          />
-        </Card>
-
-        {/* CONTEXTUAL BILLING & TIER FORECAST CARD */}
-        {(usageTab === 'month' || isBillingOpen) && (
-          <Card
-            className="border-0 shadow-none bg-white rounded-[20px] p-5 gap-3"
-            style={styles.card}>
-            <View style={styles.billingCardHeader}>
-              <Text style={styles.eyebrow}>DỰ TÍNH HÓA ĐƠN THÁNG 9</Text>
-              <View style={styles.tierBadge}>
-                <Text style={styles.tierBadgeText}>BẬC 3 / 6</Text>
+            {/* CARD: BREAKDOWN - DONUT + TABLE */}
+            <Card
+              className="border-0 shadow-none bg-white rounded-[20px] p-5 gap-4"
+              style={styles.card}>
+              <View style={styles.cardHeaderRow}>
+                <Text style={styles.eyebrow}>PHÂN BỔ THIẾT BỊ</Text>
               </View>
-            </View>
 
-            <View style={styles.billingCardPriceRow}>
-              <Text style={styles.billingCardPrice}>
-                {Math.round(MONTH_COST).toLocaleString('vi-VN')}
-              </Text>
-              <Text style={styles.billingCardCurrency}>VND</Text>
-            </View>
+              <DonutBreakdown
+                devices={devices}
+                selectedIndex={selectedDeviceIndex}
+                onSelectIndex={setSelectedDeviceIndex}
+                unitMode={unit}
+                totalKwh={currentRangeData.kwh}
+                periodLabel={currentRangeData.period}
+                onDevicePress={handleDevicePress}
+              />
 
-            <Text style={styles.billingCardNotice}>
-              Còn {Math.round(HEADROOM)} kWh dự phòng trước khi chạm {NEXT_TIER.name} (đắt hơn {STEP_PCT}%). Với tốc độ dùng hiện tại ({PACE.toFixed(1)} kWh/ngày), bạn sẽ chạm bậc mới vào ngày {CROSS_DAY}/9.
-            </Text>
+              <BreakdownTable
+                devices={devices}
+                selectedIndex={selectedDeviceIndex}
+                unitMode={unit}
+                onSelect={setSelectedDeviceIndex}
+                onDevicePress={handleDevicePress}
+              />
+            </Card>
 
-            {/* Progress bar across tiers */}
-            <View style={styles.tierProgressTrack}>
-              {TIERS.map((t, i) => (
-                <View
-                  key={t.name}
-                  style={[
-                    styles.tierProgressSeg,
-                    {
-                      flex: Math.max(TIER_USED[i], 6),
-                      backgroundColor: TIER_USED[i] > 0 ? t.color : '#E7EBE1',
-                    },
-                  ]}
-                />
-              ))}
-            </View>
-
-            <Pressable
-              onPress={() => setIsBillingOpen(!isBillingOpen)}
-              accessibilityRole="button"
-              accessibilityLabel="Xem chi tiết bảng tính 6 bậc thang và hóa đơn"
-              style={({ pressed }) => [
-                styles.billingCardAction,
-                pressed && styles.billingCardActionPressed,
-              ]}>
-              <Text style={styles.billingCardActionText}>
-                {isBillingOpen
-                  ? 'Thu gọn bảng tính biểu phí'
-                  : 'Bảng tính 6 bậc thang & hóa đơn chi tiết'}
-              </Text>
-              <Text style={styles.billingCardActionArrow}>
-                {isBillingOpen ? '▲' : '›'}
-              </Text>
-            </Pressable>
-
-            {/* Expanded Full Tariff Schedule Table */}
-            {isBillingOpen && (
-              <View style={styles.expandedBillingWrap}>
-                <BillingTariffView hideChart={true} />
+            {/* CARD: RANGE-AWARE COMPARISON CHART */}
+            <Card
+              className="border-0 shadow-none bg-white rounded-[20px] p-5 gap-4"
+              style={styles.card}>
+              <View style={styles.cardHeaderRow}>
+                <Text style={styles.eyebrow}>SO SÁNH CÙNG KỲ</Text>
               </View>
-            )}
-          </Card>
-        )}
+
+              <ComparisonChart
+                currentSeries={THIS_MONTH_DAYS}
+                previousSeries={LAST_MONTH_30_DAYS.slice(0, 14)}
+                currentDayIndex={THIS_MONTH_DAYS.length - 1}
+                currentLabel="Tháng này"
+                previousLabel="Tháng trước"
+                currentDateLabel="14/09"
+                axisStart="01/09"
+                axisEnd="30/09"
+                unitMode={unit}
+                rate={RATE}
+              />
+            </Card>
+
+            {/* CONTEXTUAL COPILOT INSIGHT BLOCK */}
+            <CopilotInsightCard
+              eyebrow="TRỢ LÝ COPILOT · GIẢI ĐÁP"
+              question="Giải đáp giúp tôi: Tại sao tháng này tiền điện tăng?"
+              snippet="Nhiệt độ ngoài trời tăng +2,4°C khiến điều hòa chạy lâu hơn 68%, đẩy gia đình chạm ngưỡng Bậc 5 EVN."
+              actionText="Hỏi Copilot giải đáp chi tiết"
+              onPress={() => {
+                setActiveThreadId('thread-1');
+                router.push('/copilot');
+              }}
+            />
 
             <NeighbourComparison
               wattage={960}
               percentile={62}
               unitMode={unit}
             />
-        </View>
+          </View>
       </ScrollView>
     </SafeAreaView>
 
@@ -556,86 +482,6 @@ const styles = StyleSheet.create({
     fontSize: 21,
     color: WattPrintTokens.colors.primary, // #164437
   },
-  billingTopActions: {
-    paddingVertical: 6,
-    paddingHorizontal: 4,
-    marginBottom: 4,
-  },
-  billingBackBtn: {
-    alignSelf: 'flex-start',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: WattPrintTokens.radii.sm,
-    backgroundColor: WattPrintTokens.colors.primaryContainer,
-  },
-  billingBackBtnText: {
-    fontFamily: Fonts.monoMedium,
-    fontSize: 12,
-    color: WattPrintTokens.colors.primary,
-    letterSpacing: 0.5,
-  },
-  billingCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  tierBadge: {
-    backgroundColor: WattPrintTokens.colors.primaryContainer,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: WattPrintTokens.radii.xs,
-  },
-  tierBadgeText: {
-    fontFamily: Fonts.monoMedium,
-    fontSize: 11,
-    color: WattPrintTokens.colors.accentDeep,
-    letterSpacing: 0.5,
-  },
-  billingCardPriceRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 6,
-  },
-  billingCardPrice: {
-    fontFamily: Fonts.sansSemiBold,
-    fontSize: 28,
-    color: WattPrintTokens.colors.primary,
-    letterSpacing: -0.5,
-  },
-  billingCardCurrency: {
-    fontFamily: Fonts.monoMedium,
-    fontSize: 14,
-    color: WattPrintTokens.colors.secondary,
-  },
-  billingCardNotice: {
-    fontFamily: Fonts.sans,
-    fontSize: 13,
-    lineHeight: 18,
-    color: WattPrintTokens.colors.inkBody,
-  },
-  billingCardAction: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: WattPrintTokens.colors.neutralGround,
-    borderRadius: WattPrintTokens.radii.md,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    marginTop: 4,
-  },
-  billingCardActionPressed: {
-    backgroundColor: WattPrintTokens.colors.primaryContainer,
-  },
-  billingCardActionText: {
-    fontFamily: Fonts.sansMedium,
-    fontSize: 13,
-    color: WattPrintTokens.colors.primary,
-  },
-  billingCardActionArrow: {
-    fontFamily: Fonts.sansSemiBold,
-    fontSize: 16,
-    color: WattPrintTokens.colors.accentDeep,
-  },
   cardHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -734,23 +580,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#4A6B60',
     marginTop: -2,
-  },
-  tierProgressTrack: {
-    flexDirection: 'row',
-    height: 8,
-    borderRadius: 4,
-    overflow: 'hidden',
-    gap: 2,
-    marginVertical: 4,
-  },
-  tierProgressSeg: {
-    height: '100%',
-    borderRadius: 1,
-  },
-  expandedBillingWrap: {
-    marginTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#EFF4E6',
-    paddingTop: 10,
   },
 });

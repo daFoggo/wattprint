@@ -2,7 +2,7 @@
 
 Mobile app that turns a household electricity meter into a per-device breakdown. One whole-home
 sensor feeds NILM (non-intrusive load monitoring) to show which appliances cost money and when,
-prices usage with Vietnam's tiered / TOU tariff, and adds an AI energy copilot that explains the
+prices usage with Vietnam's tiered / TOU tariff, and adds a RAG Generative Copilot that explains the
 numbers and suggests low-burden behaviour experiments.
 
 The backend is an **external FastAPI service**; this repo is the Expo client only. All HTTP goes

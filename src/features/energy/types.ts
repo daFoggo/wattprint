@@ -28,6 +28,7 @@ export interface EnergySummary {
   projectedMonthlyCost: number;
   status: EnergyStatus;
   statusMessage: string;
+  briefSummary: string;
 }
 
 export type UnitMode = 'kwh' | 'cost';
@@ -53,6 +54,7 @@ export interface BubbleDevice {
 export interface AlertItem {
   id: string;
   time: string;
+  tone: 'warning' | 'info' | 'good';
   text: string;
 }
 
@@ -64,7 +66,7 @@ export interface TimelineEvent {
   detail: string[];
 }
 
-export type UsageTab = 'day' | 'week' | 'month' | 'year' | 'bill';
+export type UsageTab = 'day' | 'week' | 'month' | 'year';
 export type BreakdownView = 'bubble' | 'donut' | 'bars';
 export type CustomerType = 'home' | 'biz';
 
@@ -116,10 +118,14 @@ export interface TierInfo {
 }
 
 export interface TOUInfo {
+  id: string;
   name: string;
   sub: string;
   price: number;
   share: number;
+  hours: string;
+  kwh: number;
+  cost: number;
   color: string;
 }
 
@@ -144,12 +150,28 @@ export interface ChatFact {
   v: string;
 }
 
+export interface ChatWeatherFact {
+  tempC: number;
+  diffC: number;
+  desc: string;
+}
+
+export interface ChatTariffFact {
+  currentTier: string;
+  price: number;
+  headroomKwh: number;
+  nextTier: string;
+}
+
 export interface ChatMessage {
   id: string;
   who: 'ai' | 'me';
   text: string;
   facts?: ChatFact[];
+  weather?: ChatWeatherFact;
+  tariffFact?: ChatTariffFact;
   cta?: string;
+  ctaDesc?: string;
 }
 
 export interface ChatThread {
@@ -168,6 +190,7 @@ export interface Suggestion {
   a: string;
   facts: string | ChatFact[];
   cta: string;
+  ctaDesc?: string;
 }
 
 export type ExperimentState = 'running' | 'summary' | 'suggest' | 'locked';

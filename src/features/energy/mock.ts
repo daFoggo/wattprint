@@ -17,6 +17,7 @@ import type {
   Suggestion,
   TierInfo,
   TimelineEvent,
+  TOUInfo,
   UsageChartItem,
   UsageChartSegment,
   UsagePoint,
@@ -29,6 +30,8 @@ export const mockSummary: EnergySummary = {
   projectedMonthlyCost: 1284000,
   status: 'good',
   statusMessage: 'Mọi thứ đang ổn. Điều hòa chạy ở mức hợp lý.',
+  briefSummary:
+    'Đã dùng 12,4 kWh hôm nay, thấp hơn 12% so với cùng kỳ tuần trước. Điều hòa vẫn là phụ tải lớn nhất.',
 };
 
 export const mockDeviceBreakdown: DeviceUsage[] = [
@@ -104,11 +107,13 @@ export const mockAlerts: AlertItem[] = [
   {
     id: 'a1',
     time: '05:12',
+    tone: 'good',
     text: 'Tải chạy ngầm giảm xuống 35 W sau khi bạn ngắt cụm ổ cắm TV.',
   },
   {
     id: 'a2',
     time: '18:40',
+    tone: 'warning',
     text: 'Điều hòa đã bật ở 24°C. Còn 48 kWh nữa sẽ chuyển sang Bậc 4 EVN.',
   },
 ];
@@ -223,6 +228,47 @@ export const STEP_PCT = Math.round((NEXT_TIER.price / CURRENT_TIER.price - 1) * 
 export const LAST_TOTAL = LAST_DAILY.reduce((a, b) => a + b, 0);
 export const MONTH_DELTA = Math.round((MONTH_KWH / LAST_TOTAL - 1) * 100);
 
+// Projected full-month figures at current pace (14-day window -> 30-day projection)
+export const PROJECTED_MONTH_KWH = 608;
+export const PROJECTED_MONTH_COST = 1938000;
+
+// --- TOU (time-of-use) tariff, 3 price windows ---
+export const TOU_TIERS: TOUInfo[] = [
+  {
+    id: 'tou-off',
+    name: 'Thấp điểm',
+    sub: '1.250 đ/kWh',
+    price: 1250,
+    share: 40,
+    hours: '22:00–06:00',
+    kwh: 113.6,
+    cost: 142000,
+    color: '#7CC24C',
+  },
+  {
+    id: 'tou-normal',
+    name: 'Bình thường',
+    sub: '1.850 đ/kWh',
+    price: 1850,
+    share: 22,
+    hours: '06:00–18:00',
+    kwh: 62.5,
+    cost: 115600,
+    color: '#E5A93C',
+  },
+  {
+    id: 'tou-peak',
+    name: 'Cao điểm',
+    sub: '3.150 đ/kWh',
+    price: 3150,
+    share: 38,
+    hours: '18:00–22:00',
+    kwh: 107.9,
+    cost: 339900,
+    color: '#DC2626',
+  },
+];
+
 export const DAY_CHART_ITEMS: UsageChartItem[] = [
   {
     label: '00',
@@ -335,7 +381,6 @@ export const MONTH_CHART_ITEMS: UsageChartItem[] = BILL_DAYS.map((d) => {
   let dayCost = 0;
   const tierSegments: UsageChartSegment[] = d.segs.map((sg) => {
     const tier = TIERS[sg.ti] ?? TIERS[0];
-    const pat = TIER_PATTERNS[sg.ti] ?? 'solid';
     const c = Math.round(sg.kwh * tier.price);
     dayCost += c;
     return {
@@ -638,7 +683,8 @@ export const MOCK_SUGGESTIONS: Suggestion[] = [
       { k: 'Thời gian máy nén chạy', v: '+40%' },
       { k: 'Bậc giá hiện tại', v: 'Bậc 3' },
     ],
-    cta: 'Thử nghiệm 3 ngày ở mức 26,5°C',
+    cta: 'Bắt đầu thử nghiệm',
+    ctaDesc: '3 ngày ở mức 26,5°C',
   },
   {
     q: 'Tải chạy ngầm của tôi là bao nhiêu?',
@@ -658,7 +704,8 @@ export const MOCK_SUGGESTIONS: Suggestion[] = [
       { k: 'Mức dự phòng', v: '16 kWh' },
       { k: 'Hạn mức hàng ngày', v: '6,4 kWh' },
     ],
-    cta: 'Thử nghiệm 3 ngày ở mức 26,5°C',
+    cta: 'Bắt đầu thử nghiệm',
+    ctaDesc: '3 ngày ở mức 26,5°C',
   },
 ];
 
@@ -695,7 +742,8 @@ export const MOCK_CHAT_THREADS: ChatThread[] = [
           { k: 'CHÊNH LỆCH NHIỆT ĐỘ', v: '+2,4°C tb' },
           { k: 'CHUYỂN SANG BẬC 4', v: '42 kWh' },
         ],
-        cta: 'Thử nghiệm AC 26°C + quạt',
+        cta: 'Bắt đầu thử nghiệm',
+        ctaDesc: 'AC 26°C + quạt',
       },
     ],
   },
@@ -776,7 +824,8 @@ export const MOCK_CHAT_THREADS: ChatThread[] = [
           { k: 'MỨC DỰ PHÒNG', v: '16 kWh' },
           { k: 'HẠN MỨC NGÀY', v: '2,7 kWh/ngày' },
         ],
-        cta: 'Bắt đầu thử nghiệm 3 ngày ở 26,5°C',
+        cta: 'Bắt đầu thử nghiệm',
+        ctaDesc: '3 ngày ở mức 26,5°C',
       },
     ],
   },

@@ -80,7 +80,7 @@ export function HomeScreen() {
             />
           </View>
 
-          {/* Weight Block: Alerts */}
+          {/* Anomaly Alerts & Tips */}
           <EnergyAlertsBlock alerts={mockAlerts} />
 
           {/* Today Timeline */}

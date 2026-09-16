@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   Modal,
   Pressable,
   ScrollView,
@@ -42,6 +43,8 @@ export function CreateExperimentSheet({
 
   const [targetVal, setTargetVal] = useState<number>(currentTemplate.defaultTarget);
   const [extraOption, setExtraOption] = useState<boolean>(true); // e.g. with fan
+  const [hasPredicted, setHasPredicted] = useState<boolean>(false);
+  const [isPredicting, setIsPredicting] = useState<boolean>(false);
 
   // Switch template
   const handleSelectTemplate = (index: number) => {
@@ -51,6 +54,7 @@ export function CreateExperimentSheet({
     const tmpl = EXPERIMENT_TEMPLATES[index];
     setSelectedTemplateIndex(index);
     setTargetVal(tmpl.defaultTarget);
+    setHasPredicted(false);
   };
 
   const handleMinus = () => {
@@ -58,6 +62,7 @@ export function CreateExperimentSheet({
       Haptics.selectionAsync();
     } catch {}
     setTargetVal((prev) => Math.max(currentTemplate.minTarget, prev - currentTemplate.step));
+    setHasPredicted(false);
   };
 
   const handlePlus = () => {
@@ -65,9 +70,27 @@ export function CreateExperimentSheet({
       Haptics.selectionAsync();
     } catch {}
     setTargetVal((prev) => Math.min(currentTemplate.maxTarget, prev + currentTemplate.step));
+    setHasPredicted(false);
+  };
+
+  const handlePredict = () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    } catch {}
+    setIsPredicting(true);
+    setTimeout(() => {
+      setIsPredicting(false);
+      setHasPredicted(true);
+      try {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } catch {}
+    }, 350);
   };
 
   const prediction = currentTemplate.calcPrediction(targetVal, extraOption);
+  const experimentTitle = `${currentTemplate.deviceName}: ${targetVal}${currentTemplate.unit} ${
+    currentTemplate.deviceId === 'dev-0' && extraOption ? 'kèm quạt gió' : ''
+  }`;
 
   const handleConfirmStart = () => {
     try {
@@ -78,9 +101,7 @@ export function CreateExperimentSheet({
       id: generateExperimentId(),
       deviceId: currentTemplate.deviceId,
       deviceName: currentTemplate.deviceName,
-      title: `${currentTemplate.deviceName}: ${targetVal}${currentTemplate.unit} ${
-        currentTemplate.deviceId === 'dev-0' && extraOption ? 'kèm quạt gió' : ''
-      }`,
+      title: experimentTitle,
       baselineKwh: currentTemplate.baselineKwh,
       targetKwh: prediction.targetKwh,
       predictedSavedKwh: prediction.savedKwhPerDay,
@@ -131,6 +152,12 @@ export function CreateExperimentSheet({
           <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}>
+            {/* Experiment Name Banner */}
+            <View style={styles.nameBannerCard}>
+              <Text style={styles.nameBannerLabel}>TÊN THỬ NGHIỆM</Text>
+              <Text style={styles.nameBannerTitle}>{experimentTitle}</Text>
+            </View>
+
             {/* Step 1: Device Selection Chips */}
             <Text style={styles.sectionLabel}>1. CHỌN THIẾT BỊ MỤC TIÊU</Text>
             <View style={styles.deviceRow}>
@@ -209,6 +236,7 @@ export function CreateExperimentSheet({
                       Haptics.selectionAsync();
                     } catch {}
                     setExtraOption((prev) => !prev);
+                    setHasPredicted(false);
                   }}
                   style={styles.toggleRow}>
                   <View
@@ -227,63 +255,99 @@ export function CreateExperimentSheet({
 
             {/* Step 3: Unified Impact & Comparison Card */}
             <Text style={styles.sectionLabel}>3. DỰ KIẾN HIỆU QUẢ & TIẾT KIỆM (7 NGÀY)</Text>
-            <View style={styles.impactCard}>
-              {/* Savings Headline Badge */}
-              <View style={styles.impactTopRow}>
-                <View style={styles.impactBadge}>
-                  <Sparkles size={14} color={WattPrintTokens.colors.primary} strokeWidth={2.2} />
-                  <Text style={styles.impactBadgeText}>ƯỚC TÍNH TIẾT KIỆM</Text>
+            {!hasPredicted ? (
+              <View style={styles.predictCard}>
+                <View style={styles.predictHeaderRow}>
+                  <Sparkles size={15} color={WattPrintTokens.colors.primary} strokeWidth={2.4} />
+                  <Text style={styles.predictTitle}>DỰ ĐOÁN HIỆU QUẢ TIẾT KIỆM</Text>
                 </View>
-                <Text style={styles.impactVndHighlight}>
-                  ~{prediction.savedVndPerWeek.toLocaleString('vi-VN')} đ/tuần
+                <Text style={styles.predictDesc}>
+                  Dựa trên thói quen đo đạc 14 ngày qua và mô hình biểu phí EVN, WattPrint sẽ mô phỏng lượng điện cắt giảm & chi phí tiết kiệm.
                 </Text>
+                <Pressable
+                  onPress={handlePredict}
+                  disabled={isPredicting}
+                  style={({ pressed }) => [
+                    styles.predictBtn,
+                    pressed && styles.predictBtnPressed,
+                    isPredicting && { opacity: 0.75 },
+                  ]}>
+                  {isPredicting ? (
+                    <ActivityIndicator size="small" color={WattPrintTokens.colors.primary} />
+                  ) : (
+                    <Sparkles size={15} color={WattPrintTokens.colors.primary} strokeWidth={2.4} />
+                  )}
+                  <Text style={styles.predictBtnText}>
+                    {isPredicting ? 'ĐANG TÍNH TOÁN DỰ BÁO...' : 'DỰ ĐOÁN THAY ĐỔI'}
+                  </Text>
+                </Pressable>
               </View>
-
-              {/* High Contrast Comparison Row */}
-              <View style={styles.impactCompareRow}>
-                {/* Baseline Pillar */}
-                <View style={styles.pillarBox}>
-                  <Text style={styles.pillarLabel}>MỨC NỀN ĐO ĐẠC</Text>
-                  <View style={styles.pillarValRow}>
-                    <Text style={styles.pillarVal}>
-                      {currentTemplate.baselineKwh.toFixed(1)}
-                    </Text>
-                    <Text style={styles.pillarUnit}>kWh/ngày</Text>
+            ) : (
+              <View style={styles.impactCard}>
+                {/* Savings Headline Badge */}
+                <View style={styles.impactTopRow}>
+                  <View style={styles.impactBadge}>
+                    <Sparkles size={14} color={WattPrintTokens.colors.primary} strokeWidth={2.2} />
+                    <Text style={styles.impactBadgeText}>ƯỚC TÍNH TIẾT KIỆM</Text>
                   </View>
-                  <Text style={styles.pillarSub}>Trung bình 14 ngày</Text>
+                  <Text style={styles.impactVndHighlight}>
+                    ~{prediction.savedVndPerWeek.toLocaleString('vi-VN')} đ/tuần
+                  </Text>
                 </View>
 
-                {/* Arrow & Delta in the middle */}
-                <View style={styles.pillarDivider}>
-                  <ArrowRight size={18} color={WattPrintTokens.colors.secondary} strokeWidth={2.2} />
-                  <View style={styles.pillarDeltaBadge}>
-                    <Text style={styles.pillarDeltaText}>-{prediction.pct}%</Text>
+                {/* High Contrast Comparison Row */}
+                <View style={styles.impactCompareRow}>
+                  {/* Baseline Pillar */}
+                  <View style={styles.pillarBox}>
+                    <Text style={styles.pillarLabel}>MỨC NỀN ĐO ĐẠC</Text>
+                    <View style={styles.pillarValRow}>
+                      <Text style={styles.pillarVal}>
+                        {currentTemplate.baselineKwh.toFixed(1)}
+                      </Text>
+                      <Text style={styles.pillarUnit}>kWh/ngày</Text>
+                    </View>
+                    <Text style={styles.pillarSub}>Trung bình 14 ngày</Text>
+                  </View>
+
+                  {/* Arrow & Delta in the middle */}
+                  <View style={styles.pillarDivider}>
+                    <ArrowRight size={18} color={WattPrintTokens.colors.secondary} strokeWidth={2.2} />
+                    <View style={styles.pillarDeltaBadge}>
+                      <Text style={styles.pillarDeltaText}>-{prediction.pct}%</Text>
+                    </View>
+                  </View>
+
+                  {/* Target Pillar - Solid Primary Green Card (Max Contrast) */}
+                  <View style={[styles.pillarBox, styles.pillarBoxTarget]}>
+                    <Text style={styles.pillarLabelTarget}>MỤC TIÊU MỚI</Text>
+                    <View style={styles.pillarValRow}>
+                      <Text style={styles.pillarValTarget}>
+                        {prediction.targetKwh.toFixed(1)}
+                      </Text>
+                      <Text style={styles.pillarUnitTarget}>kWh/ngày</Text>
+                    </View>
+                    <Text style={styles.pillarSubTarget}>
+                      Giảm {prediction.savedKwhPerDay.toFixed(1)} kWh/ngày
+                    </Text>
                   </View>
                 </View>
 
-                {/* Target Pillar - Solid Primary Green Card (Max Contrast) */}
-                <View style={[styles.pillarBox, styles.pillarBoxTarget]}>
-                  <Text style={styles.pillarLabelTarget}>MỤC TIÊU MỚI</Text>
-                  <View style={styles.pillarValRow}>
-                    <Text style={styles.pillarValTarget}>
-                      {prediction.targetKwh.toFixed(1)}
-                    </Text>
-                    <Text style={styles.pillarUnitTarget}>kWh/ngày</Text>
-                  </View>
-                  <Text style={styles.pillarSubTarget}>
-                    Giảm {prediction.savedKwhPerDay.toFixed(1)} kWh/ngày
+                {/* Contextual Tariff & Sufficiency Insight */}
+                <View style={styles.impactSummaryBox}>
+                  <Text style={styles.impactSummaryText}>{prediction.summary}</Text>
+                  <Text style={styles.impactTariffNote}>
+                    Ước tính cắt giảm {prediction.savedKwhPerDay.toFixed(1)} kWh/ngày, hạn chế nguy cơ nhảy sang Bậc 4 EVN (2.860 đ/kWh).
+                  </Text>
+                </View>
+
+                <View style={styles.predictedStatusRow}>
+                  <View style={styles.predictedStatusDot} />
+                  <Text style={styles.predictedStatusText}>
+                    Đã tính toán dự báo theo mục tiêu mới
                   </Text>
                 </View>
               </View>
-
-              {/* Contextual Tariff & Sufficiency Insight */}
-              <View style={styles.impactSummaryBox}>
-                <Text style={styles.impactSummaryText}>{prediction.summary}</Text>
-                <Text style={styles.impactTariffNote}>
-                  Ước tính cắt giảm {prediction.savedKwhPerDay.toFixed(1)} kWh/ngày, hạn chế nguy cơ nhảy sang Bậc 4 EVN (2.860 đ/kWh).
-                </Text>
-              </View>
-            </View>
+            )}
           </ScrollView>
 
           {/* Sticky CTA Button at Bottom */}
@@ -365,6 +429,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 20,
     gap: 12,
+  },
+  nameBannerCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    gap: 4,
+    borderWidth: 1,
+    borderColor: '#E2E7DB',
+  },
+  nameBannerLabel: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 11,
+    letterSpacing: 0.6,
+    color: WattPrintTokens.colors.secondary, // #4A6B60
+  },
+  nameBannerTitle: {
+    fontFamily: Fonts.sansSemiBold,
+    fontSize: 16,
+    color: WattPrintTokens.colors.primary, // #164437
   },
   sectionLabel: {
     fontFamily: Fonts.monoMedium,
@@ -619,6 +703,68 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.sans,
     fontSize: 12,
     lineHeight: 16,
+    color: WattPrintTokens.colors.secondary,
+  },
+  predictCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 18,
+    gap: 12,
+  },
+  predictHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  predictTitle: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 12,
+    letterSpacing: 0.5,
+    color: WattPrintTokens.colors.primary,
+  },
+  predictDesc: {
+    fontFamily: Fonts.sans,
+    fontSize: 13,
+    lineHeight: 18,
+    color: WattPrintTokens.colors.secondary,
+  },
+  predictBtn: {
+    backgroundColor: WattPrintTokens.colors.tertiary, // #B5E930
+    borderRadius: WattPrintTokens.radii.pill,
+    paddingVertical: 13,
+    paddingHorizontal: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 4,
+  },
+  predictBtnPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.985 }],
+  },
+  predictBtnText: {
+    fontFamily: Fonts.monoSemiBold,
+    fontSize: 13,
+    letterSpacing: 0.5,
+    color: WattPrintTokens.colors.primary,
+  },
+  predictedStatusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingTop: 4,
+    alignSelf: 'center',
+  },
+  predictedStatusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: WattPrintTokens.colors.accentDeep,
+  },
+  predictedStatusText: {
+    fontFamily: Fonts.monoMedium,
+    fontSize: 11,
     color: WattPrintTokens.colors.secondary,
   },
   footerWrap: {
